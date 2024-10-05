@@ -69,4 +69,89 @@ async function editItem(url, id, editItem) {
     throw new Error(error)
   }
 }
-export { getItems, getItemById, deleteItemById, addItem, editItem }
+
+const getAccessToken = async (clientId, clientSecret) => {
+  const response = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body:
+      'grant_type=client_credentials&client_id=' +
+      clientId +
+      '&client_secret=' +
+      clientSecret
+  })
+  const data = await response.json()
+  return data.access_token
+}
+const getPlayList = async (access_token, playlist) => {
+  const playlistResponse = await fetch(
+    `https://api.spotify.com/v1/playlists/${playlist}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
+    }
+  )
+  const playlistData = await playlistResponse.json()
+  return playlistData.tracks.items.map((item) => item.track.album)
+}
+const getALlAlbums = async (access_token) => {
+  const albumResponse = await fetch(
+    `https://api.spotify.com/v1/albums/5U4W9E5WsYb2jUQWePT8Xm`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
+    }
+  )
+  const albumData = await albumResponse.json()
+  return albumData
+}
+
+const getArtist = async (access_token, artist) => {
+  const artistResponse = await fetch(
+    `https://api.spotify.com/v1/search?q=${artist}&type=artist`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
+    }
+  )
+  const artistData = await artistResponse.json()
+  return artistData
+}
+const getAlbumfromArtist = async (access_token, artist) => {
+  const returnAlbums = await fetch(
+    `https://api.spotify.com/v1/artists/${artist.artists.items[0].id}/albums?include_groups=album&market=US&limit=50`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
+    }
+  )
+  const albumData = await returnAlbums.json()
+  return albumData.items
+}
+
+
+export {
+  getItems,
+  getItemById,
+  deleteItemById,
+  addItem,
+  editItem,
+  getAccessToken,
+  getPlayList,
+  getArtist,
+  getAlbumfromArtist
+}
