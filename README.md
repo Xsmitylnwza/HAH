@@ -6,7 +6,7 @@
    add playlist
  
  65130500065 นายภูริ ไชยนิคม (20%)<br>
-   UX UI design
+   UX UI design, List playlist
 
  65130500081 นายศุภกร ปรีชานฤตย์ (20%)<br>
    edit playlist
