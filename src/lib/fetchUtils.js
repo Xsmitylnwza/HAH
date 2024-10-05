@@ -70,6 +70,26 @@ async function editItem(url, id, editItem) {
   }
 }
 
+async function login(username, password) {
+  const url = 'http://localhost:5000/users'
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    const users = await res.json()
+    const user = users.find(
+      (user) => user.username === username && user.password === password
+    )
+    return user
+  } catch (error) {
+    console.log(`error: ${error}`)
+    throw new Error(error)
+  }
+}
+
 const getAccessToken = async (clientId, clientSecret) => {
   const response = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
@@ -83,6 +103,7 @@ const getAccessToken = async (clientId, clientSecret) => {
       clientSecret
   })
   const data = await response.json()
+  localStorage.setItem('access_token', data.access_token)
   return data.access_token
 }
 const getPlayList = async (access_token, playlist) => {
@@ -98,20 +119,6 @@ const getPlayList = async (access_token, playlist) => {
   )
   const playlistData = await playlistResponse.json()
   return playlistData.tracks.items.map((item) => item.track.album)
-}
-const getALlAlbums = async (access_token) => {
-  const albumResponse = await fetch(
-    `https://api.spotify.com/v1/albums/5U4W9E5WsYb2jUQWePT8Xm`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + access_token
-      }
-    }
-  )
-  const albumData = await albumResponse.json()
-  return albumData
 }
 
 const getArtist = async (access_token, artist) => {
@@ -143,7 +150,6 @@ const getAlbumfromArtist = async (access_token, artist) => {
   return albumData.items
 }
 
-
 export {
   getItems,
   getItemById,
@@ -153,5 +159,6 @@ export {
   getAccessToken,
   getPlayList,
   getArtist,
-  getAlbumfromArtist
+  getAlbumfromArtist,
+  login
 }

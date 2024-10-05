@@ -1,36 +1,35 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import Header from './components/Header.vue'
-import LoginModal from './components/LoginModal.vue' // import login modal component
+import LoginModal from './components/LoginModal.vue'
 import { usePlaylistStore } from './stores/playlist'
 import { useAlbumStore } from './stores/album'
-// import { useUserStore } from './stores/user' // store for handling login
+import { fetchProfile, getAccessToken } from './stores/login'
 
 const albumStore = useAlbumStore()
 const playlistStore = usePlaylistStore()
-// const userStore = useUserStore()
-
 const clientId = '904da645d0e64016ab25cbfc9ce444a4'
 const clientSecret = '29fc6f15441b451f91885b1b423e5230'
 const accessToken = ref('')
 const searchInput = ref('')
 const albums = ref([])
-const selectedSong = ref(null)
 const lyrics = ref('')
-const showModal = ref(false) // For controlling modal visibility
-const isLoggedIn = ref(false) // To track user login status
+const showModal = ref(false)
+const isLoggedIn = ref(false)
 
 onMounted(async () => {
+  const urlParams = new URLSearchParams(window.location.search)
+  const code = urlParams.get('code')
+  if (code) isLoggedIn.value = true
   await playlistStore.setAccessToken(clientId, clientSecret)
   accessToken.value = playlistStore.getAccessToken
+  const token = await getAccessToken(clientId, code)
+  console.log(await fetchProfile(token))
+
   await playlistStore.setPlayList(accessToken.value, '37i9dQZF1DX812gZSD3Ky1')
   albums.value = playlistStore.getPlaylist
-
-  // Check if user is logged in
-  // isLoggedIn.value = userStore.isLoggedIn
 })
 
-// Search functionality - now on input instead of button
 const search = async () => {
   const artist = await albumStore.setArtist(
     accessToken.value,
@@ -87,7 +86,7 @@ const search = async () => {
               alt="Profile Picture"
               class="w-10 h-10 rounded-full"
             />
-            <span class="text-black">Test</span>
+            <span class="text-black">{{ username }}</span>
           </div>
         </div>
       </div>
@@ -128,7 +127,12 @@ const search = async () => {
 
   <!-- Login Modal (Using Teleport) -->
   <teleport to="body">
-    <LoginModal v-if="showModal" @close="showModal = false" />
+    <LoginModal
+      v-if="showModal"
+      :code="code"
+      @close="showModal = false"
+      @login="isLoggedIn = true"
+    />
   </teleport>
 </template>
 

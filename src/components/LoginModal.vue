@@ -1,14 +1,24 @@
 <script setup>
 import { ref } from 'vue'
-// import { useUserStore } from '../stores/user'
-//
-// const userStore = useUserStore()
+import { useUserStore } from '../stores/user'
+import {
+  redirectToAuthCodeFlow
+} from '../stores/login'
+
+const props = defineProps(['code'])
+
+const userStore = useUserStore()
 const username = ref('')
 const password = ref('')
+const clientId = ref('')
 
 const login = async () => {
-  //   await userStore.login(username.value, password.value)
-  $emit('close') 
+  await userStore.login(username.value, password.value)
+  clientId.value = userStore.getUser
+  if (clientId.value) {
+    redirectToAuthCodeFlow(clientId.value)
+    $emit('login')
+  }
 }
 </script>
 
