@@ -1,29 +1,19 @@
 # rainlightriot
 
-This template should help get you started developing with Vue 3 in Vite.
+## Member
 
-## Recommended IDE Setup
+ 65130500026 ธนวินท์ กีรติเกษมสุข (20%)<br>
+   add playlist
+ 
+ 65130500065 นายภูริ ไชยนิคม (20%)<br>
+   UX UI design
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+ 65130500081 นายศุภกร ปรีชานฤตย์ (20%)<br>
+   edit playlist
+ 
+ 65130500094 นายชนะพล พันธุวดี (20%) <br>
+  fetch spotify api,Login,List album,Search,
+    
+ 65130500104 นางสาวณัฐนันท์ จิราจารุวัฒน์ (20%)  <br>
+    UX UI design, delete playlist
+ 
