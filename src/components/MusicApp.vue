@@ -54,30 +54,10 @@ const addPlaylist = () => {
 
 <template>
   <!-- Header Grid -->
-  <Header :style="{ marginLeft: showSidebar ? '256px' : '0' }">
-    <template #icon>
-      <img
-        alt="Vue logo"
-        class="logo cursor-pointer"
-        src="../assets/logo.svg"
-        width="75"
-        height="75"
-        @click="toggleSidebar"
-        Logo
-        click
-        event
-        to
-        toggle
-        sidebar
-      />
-    </template>
+  <Header :style="{ marginLeft: '256px' }">
+    <template #icon> </template>
     <template #default>
       <div class="flex justify-between items-center w-full">
-        <div>
-          <h2 class="text-2xl font-semibold text-black">Rainlight Riot</h2>
-          <div class="text-black">description</div>
-        </div>
-
         <!-- Search Input aligned to the right -->
         <div class="flex justify-end items-center w-[30%]">
           <div class="relative w-full">
@@ -85,8 +65,15 @@ const addPlaylist = () => {
               type="text"
               v-model="searchInput"
               placeholder="Search for an artist"
-              class="w-full pl-8 pr-4 py-4 rounded-3xl border border-gray-300 text-lg shadow-md focus:outline-none"
+              class="w-full pl-10 pr-4 py-4 rounded-3xl border border-gray-300 text-lg shadow-md focus:outline-none"
               @input="search"
+            />
+            <img
+              alt="Search icon"
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 filter brightness-0 invert"
+              src="../assets/search.svg"
+              width="20"
+              height="20"
             />
           </div>
         </div>
@@ -96,58 +83,60 @@ const addPlaylist = () => {
           <button
             v-if="!isLoggedIn"
             @click="showModal = true"
-            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+            class="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold px-6 py-3 rounded-full hover:bg-blue-800 transition duration-300"
           >
             Login
           </button>
-          <div v-else class="flex items-center space-x-2">
+          <div
+            v-else
+            class="flex items-center space-x-2 border-2 rounded-full pl-4"
+          >
+            <span class="text-white">Username</span>
             <img
-              :src="Test"
+              src="../assets/profile.jpeg"
               alt="Profile Picture"
-              class="w-10 h-10 rounded-full"
+              class="w-12 h-12 rounded-full"
             />
-            <span class="text-black">{{ username }}</span>
           </div>
         </div>
       </div>
     </template>
   </Header>
 
-  <!-- Sidebar -->
-  <transition name="fade">
-    <div
-      v-if="showSidebar"
-      class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-lg"
-    >
-      <div class="p-4 flex justify-between items-center">
-        <h2 class="text-3xl font-bold">Playlists</h2>
-        <button
-          @click="addPlaylist"
-          class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-700"
-        >
-          <span class="material-icons">add</span>
-        </button>
-      </div>
-      <div class="flex mt-2">
-        <p class="p-4">Add Playlist</p>
-      </div>
+  <div class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-lg">
+    <div class="p-4 flex justify-between items-center">
+      <h2 class="text-3xl font-bold">Rainlight Riot</h2>
+      <button
+        @click="addPlaylist"
+        class="flex items-center justify-center transition-transform duration-300 hover:scale-110 rounded-full bg-slate-500 hover:bg-slate-600"
+      >
+        <img
+          alt="Vue logo"
+          class="logo cursor-pointer"
+          src="../assets/plus.svg"
+          width="35"
+          height="35"
+          @click="toggleSidebar"
+        />
+      </button>
     </div>
-  </transition>
-
-  <!-- Main Content Area -->
-  <div :class="{ 'ml-64': showSidebar }" class="transition-all duration-300">
-    <!-- Album Grid -->
-    <Album :albums="albums" />
-
-    <!-- Login Modal -->
-    <teleport to="body">
-      <LoginModal
-        v-if="showModal"
-        @close="showModal = false"
-        @login="isLoggedIn = true"
-      />
-    </teleport>
+    <div class="flex mt-2">
+      <button class="hover:bg-slate-700 w-full text-start">
+        <div class="p-4">My Playlist</div>
+      </button>
+    </div>
   </div>
+
+  <div class="ml-64">
+    <Album :albums="albums" />
+  </div>
+  <teleport to="body">
+    <LoginModal
+      v-if="showModal"
+      @close="showModal = false"
+      @login="isLoggedIn = true"
+    />
+  </teleport>
 </template>
 
 <style scoped></style>

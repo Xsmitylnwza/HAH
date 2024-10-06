@@ -22,32 +22,52 @@ const login = async () => {
 
 <template>
   <div
-    class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center"
+    class="fixed inset-0 bg-gray-800 bg-opacity-70 flex items-center justify-center"
   >
-    <div class="bg-white p-6 rounded shadow-md w-96">
-      <h2 class="text-lg font-semibold mb-4">Login</h2>
-      <input
-        v-model="username"
-        type="text"
-        placeholder="Username"
-        class="border border-gray-300 p-2 w-full mb-4 rounded"
-      />
-      <input
-        v-model="password"
-        type="password"
-        placeholder="Password"
-        class="border border-gray-300 p-2 w-full mb-4 rounded"
-      />
-      <div class="flex justify-end space-x-2">
+    <div
+      class="bg-gradient-to-r from-gray-800 to-gray-900 p-8 rounded-3xl shadow-lg w-96 h-[60%] flex flex-col justify-center relative"
+    >
+      <h2 class="text-2xl font-semibold mb-4 text-white text-center">
+        Login
         <button
           @click="$emit('close')"
-          class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+          class="absolute top-4 right-4 bg-gray-600 text-white p-1 rounded hover:bg-gray-500"
         >
-          Cancel
+          <img
+            alt="Close"
+            class="logo cursor-pointer"
+            src="../assets/close.svg"
+            width="20"
+            height="20"
+          />
         </button>
+      </h2>
+
+      <div class="mb-4">
+        <label class="block text-white mb-1">Username</label>
+        <input
+          v-model="username"
+          type="text"
+          placeholder="Username"
+          class="border border-gray-300 p-2 w-full rounded bg-gray-700 text-white placeholder-gray-400"
+        />
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-white mb-1">Password</label>
+        <input
+          v-model="password"
+          type="password"
+          placeholder="Password"
+          class="border border-gray-300 p-2 w-full rounded bg-gray-700 text-white placeholder-gray-400"
+        />
+      </div>
+
+      <div class="flex flex-col items-center mt-8">
+        <!-- เพิ่ม margin-top ที่นี่ -->
         <button
           @click="login"
-          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+          class="bg-gradient-to-r from-blue-500 to-blue-700 text-white text-lg px-4 py-2 rounded hover:bg-blue-800 mb-4 w-full"
         >
           Login
         </button>
