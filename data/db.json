@@ -1,23 +1,14 @@
 {
   "users": [
     {
-      "id": 1,
       "username": "ccbluecc",
-      "password": "951159",
+      "password": "123456",
       "clientId": "904da645d0e64016ab25cbfc9ce444a4"
     },
     {
-      "id": 2,
       "username": "jane_smith",
       "password": "securePassword",
       "clientId": "anotherClientId"
-    }
-  ],
-  "profile": [
-    {
-      "userId": 1,
-      "display_name": "",
-      "images": ""
     }
   ]
 }

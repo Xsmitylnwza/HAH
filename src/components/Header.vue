@@ -14,7 +14,7 @@ defineProps({
 
 <template>
   <div
-    class="flex flex-row border border-solid border-gray-300 p-4 rounded-2xl text-white bg-gradient-to-r from-blue-300 to-violet-400 shadow-lg"
+    class="flex flex-row border border-solid border-gray-300 p-4 text-white bg-gradient-to-r from-blue-300 to-violet-400 shadow-lg"
     :class="[
       { 'items-start': position === 'left' },
       { 'items-center': position === 'center' },

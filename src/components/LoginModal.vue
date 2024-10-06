@@ -1,9 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useUserStore } from '../stores/user'
-import {
-  redirectToAuthCodeFlow
-} from '../stores/login'
+import { redirectToAuthCodeFlow } from '../stores/login'
 
 const props = defineProps(['code'])
 
