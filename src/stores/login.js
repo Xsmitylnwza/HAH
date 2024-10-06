@@ -1,9 +1,8 @@
-const params = new URLSearchParams(window.location.search)
-
 export async function redirectToAuthCodeFlow(clientId) {
   const verifier = generateCodeVerifier(128)
   const challenge = await generateCodeChallenge(verifier)
   localStorage.setItem('verifier', verifier)
+
   const params = new URLSearchParams()
   params.append('client_id', clientId)
   params.append('response_type', 'code')
@@ -11,14 +10,14 @@ export async function redirectToAuthCodeFlow(clientId) {
   params.append('scope', 'user-read-private user-read-email')
   params.append('code_challenge_method', 'S256')
   params.append('code_challenge', challenge)
+
   document.location = `https://accounts.spotify.com/authorize?${params.toString()}`
 }
 
 function generateCodeVerifier(length) {
   let text = ''
-  let possible =
+  const possible =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-
   for (let i = 0; i < length; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length))
   }
@@ -42,12 +41,16 @@ export async function getAccessToken(clientId, code) {
   params.append('code', code)
   params.append('redirect_uri', 'http://localhost:5173/callback')
   params.append('code_verifier', verifier)
+
   const result = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params
   })
+
   const { access_token } = await result.json()
+  localStorage.setItem('access_token', access_token)
+
   return access_token
 }
 
@@ -57,4 +60,12 @@ export async function fetchProfile(token) {
     headers: { Authorization: `Bearer ${token}` }
   })
   return await result.json()
+}
+
+// ดึง access_token จาก localStorage และใช้ในการดึงโปรไฟล์
+export async function fetchProfileFromStorage() {
+  const token = localStorage.getItem('access_token')
+  if (token) {
+    return fetchProfile(token)
+  }
 }

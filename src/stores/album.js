@@ -12,9 +12,6 @@ export const useAlbumStore = defineStore('album', {
     }
   },
   actions: {
-    async setAllAlbums(access_token){
-
-    },
     async setArtist(accessToken, artist) {
       try {
         const response = await getArtist(accessToken, artist)

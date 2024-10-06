@@ -15,6 +15,7 @@ const login = async () => {
   clientId.value = userStore.getUser
   if (clientId.value) {
     redirectToAuthCodeFlow(clientId.value)
+
     $emit('login')
   }
 }

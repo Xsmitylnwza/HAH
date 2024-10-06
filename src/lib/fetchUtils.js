@@ -103,7 +103,6 @@ const getAccessToken = async (clientId, clientSecret) => {
       clientSecret
   })
   const data = await response.json()
-  localStorage.setItem('access_token', data.access_token)
   return data.access_token
 }
 const getPlayList = async (access_token, playlist) => {

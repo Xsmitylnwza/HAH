@@ -3,14 +3,10 @@ import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    user: '',
-    token: '',
-    profile: {},
-    isLoggedIn: false
+    user: ''
   }),
   getters: {
-    getUser: (state) => state.user,
-    username: (state) => state.profile.display_name || 'Test'
+    getUser: (state) => state.user
   },
   actions: {
     async login(username, password) {
@@ -21,15 +17,6 @@ export const useUserStore = defineStore('user', {
       } catch (e) {
         console.error(e)
       }
-    },
-    setToken(value) {
-      this.token = value
-    },
-    setProfile(value) {
-      this.profile = value
-    },
-    setIsLoggedIn(value) {
-      this.isLoggedIn = value
     }
   }
 })

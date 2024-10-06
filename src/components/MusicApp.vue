@@ -5,7 +5,7 @@ import LoginModal from './LoginModal.vue'
 import Album from './Album.vue'
 import { usePlaylistStore } from '../stores/playlist'
 import { useAlbumStore } from '../stores/album'
-import { fetchProfile, getAccessToken } from '../stores/login'
+import { fetchProfileFromStorage, getAccessToken } from '../stores/login'
 
 const albumStore = useAlbumStore()
 const playlistStore = usePlaylistStore()
@@ -20,15 +20,26 @@ const username = ref('')
 const showSidebar = ref(false)
 
 onMounted(async () => {
+  //if login
   const urlParams = new URLSearchParams(window.location.search)
   const code = urlParams.get('code')
+  let localAccessToken = localStorage.getItem('access_token')
+  if (localAccessToken) {
+    console.log(localAccessToken)
+  } else if (code) {
+    console.log(code)
+    await getAccessToken(clientId, code)
+    isLoggedIn.value = true
+  }
   if (code) isLoggedIn.value = true
+  const profile = await fetchProfileFromStorage()
+  if (profile) {
+    username.value = profile.display_name
+  }
+
+  //if not login
   await playlistStore.setAccessToken(clientId, clientSecret)
   accessToken.value = playlistStore.getAccessToken
-  const token = await getAccessToken(clientId, code)
-  const profile = await fetchProfile(token)
-  username.value = profile.name
-
   await playlistStore.setPlayList(accessToken.value, '37i9dQZF1DX812gZSD3Ky1')
   albums.value = playlistStore.getPlaylist
 })
@@ -91,7 +102,7 @@ const addPlaylist = () => {
             v-else
             class="flex items-center space-x-2 border-2 rounded-full pl-4"
           >
-            <span class="text-white">Username</span>
+            <span class="text-white">{{ username }}</span>
             <img
               src="../assets/profile.jpeg"
               alt="Profile Picture"
