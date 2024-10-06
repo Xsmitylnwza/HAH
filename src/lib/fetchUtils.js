@@ -149,6 +149,47 @@ const getAlbumfromArtist = async (access_token, artist) => {
   return albumData.items
 }
 
+const getMyPlaylists = async (user_id, access_token) => {
+  const playlists = await getUserPlaylists(user_id, access_token)
+  const albums = await getAlbumsFromPlaylists(playlists, access_token)
+  return albums
+}
+
+const getUserPlaylists = async (user_id, access_token) => {
+  const response = await fetch(
+    `https://api.spotify.com/v1/users/${user_id}/playlists`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
+    }
+  )
+  const playlists = await response.json()
+  return playlists.items
+}
+
+const getAlbumsFromPlaylists = async (playlists, access_token) => {
+  const albums = []
+  for (const playlist of playlists) {
+    const trackResponse = await fetch(
+      `https://api.spotify.com/v1/playlists/${playlist.id}/tracks`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + access_token
+        }
+      }
+    )
+    const tracksData = await trackResponse.json()
+    const playlistAlbums = tracksData.items.map((item) => item.track.album)
+    albums.push(...playlistAlbums)
+  }
+  return albums
+}
+
 export {
   getItems,
   getItemById,
@@ -159,5 +200,6 @@ export {
   getPlayList,
   getArtist,
   getAlbumfromArtist,
+  getMyPlaylists,
   login
 }

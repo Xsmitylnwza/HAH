@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getAccessToken, getPlayList } from '../lib/fetchUtils'
+import { getAccessToken, getPlayList, getMyPlaylists } from '../lib/fetchUtils'
 
 export const usePlaylistStore = defineStore('playlist', {
   state: () => ({
@@ -26,6 +26,14 @@ export const usePlaylistStore = defineStore('playlist', {
     async setPlayList(accessToken, playlistId) {
       try {
         const response = await getPlayList(accessToken, playlistId)
+        this.playlist = response
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    async getMyPlayList(accessToken, user_id) {
+      try {
+        const response = await getMyPlaylists(user_id, accessToken)
         this.playlist = response
       } catch (e) {
         console.error(e)

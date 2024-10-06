@@ -17,7 +17,8 @@ const albums = ref([])
 const showModal = ref(false)
 const isLoggedIn = ref(false)
 const username = ref('')
-const showSidebar = ref(false)
+const user_id = ref('')
+const token = ref('')
 
 onMounted(async () => {
   //if login
@@ -25,16 +26,16 @@ onMounted(async () => {
   const code = urlParams.get('code')
   let localAccessToken = localStorage.getItem('access_token')
   if (localAccessToken) {
-    console.log(localAccessToken)
+    token.value = localAccessToken
   } else if (code) {
-    console.log(code)
     await getAccessToken(clientId, code)
     isLoggedIn.value = true
   }
   if (code) isLoggedIn.value = true
   const profile = await fetchProfileFromStorage()
   if (profile) {
-    username.value = profile.display_name
+    username.value = profile.display_name.toUpperCase()
+    user_id.value = profile.id
   }
 
   //if not login
@@ -53,8 +54,9 @@ const search = async () => {
   albums.value = albumStore.getAlbums
 }
 
-const toggleSidebar = () => {
-  showSidebar.value = !showSidebar.value
+const getMyplayList = async () => {
+  await playlistStore.getMyPlayList(token.value, user_id.value)
+  albums.value = playlistStore.getPlaylist
 }
 
 const addPlaylist = () => {
@@ -127,12 +129,14 @@ const addPlaylist = () => {
           src="../assets/plus.svg"
           width="35"
           height="35"
-          @click="toggleSidebar"
         />
       </button>
     </div>
     <div class="flex mt-2">
-      <button class="hover:bg-slate-700 w-full text-start">
+      <button
+        class="hover:bg-slate-700 w-full text-start"
+        @click="getMyplayList"
+      >
         <div class="p-4">My Playlist</div>
       </button>
     </div>
