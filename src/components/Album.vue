@@ -1,18 +1,13 @@
-<script setup>
-const props = defineProps({
-  albums: Array
-})
-</script>
-
 <template>
   <div
     v-if="albums.length > 0"
     class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-4 p-4"
   >
-    <div
+    <button
       v-for="album in albums"
       :key="album.id"
       class="bg-white shadow-lg rounded-lg overflow-hidden transform transition-transform duration-200 hover:shadow-xl hover:-translate-y-1"
+      @click="click(album)"
     >
       <img
         :src="album.images[0].url"
@@ -25,13 +20,36 @@ const props = defineProps({
         >
           {{ album.name }}
         </h3>
-        <p class="text-gray-500">{{ album.release_date }}</p>
+        <p class="text-gray-500">{{ album.artists[0].name }}</p>
       </div>
-    </div>
+    </button>
   </div>
-  <div v-else>
-    <p class="text-center text-gray-500">No albums found.</p>
-  </div>
+
+  <!-- Display TrackList component when an album is clicked -->
+  <TrackList v-if="selectedAlbum" :tracks="tracks" :album="selectedAlbum" />
 </template>
 
-<style scoped></style>
+<script setup>
+import { ref } from 'vue'
+import { usePlaylistStore } from '../stores/playlist'
+import TrackList from './TrackList.vue' // Import TrackList component
+
+const props = defineProps({
+  albums: Array
+})
+
+const playlistStore = usePlaylistStore()
+let accessToken = localStorage.getItem('access_token')
+
+const selectedAlbum = ref(null)
+const tracks = ref([])
+
+const click = async (album) => {
+  selectedAlbum.value = album
+  const trackData = await playlistStore.getAlbumSpotifyTrack(
+    accessToken,
+    album.id
+  )
+  tracks.value = trackData // Update track list
+}
+</script>

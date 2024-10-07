@@ -6,6 +6,7 @@ import Album from './Album.vue'
 import { usePlaylistStore } from '../stores/playlist'
 import { useAlbumStore } from '../stores/album'
 import { fetchProfileFromStorage, getAccessToken } from '../stores/login'
+import PlayList from './PlayList.vue'
 
 const albumStore = useAlbumStore()
 const playlistStore = usePlaylistStore()
@@ -14,6 +15,7 @@ const clientSecret = '29fc6f15441b451f91885b1b423e5230'
 const accessToken = ref('')
 const searchInput = ref('')
 const albums = ref([])
+const playlists = ref([])
 const showModal = ref(false)
 const isLoggedIn = ref(false)
 const username = ref('')
@@ -34,7 +36,7 @@ onMounted(async () => {
   if (code) isLoggedIn.value = true
   const profile = await fetchProfileFromStorage()
   if (profile) {
-    username.value = profile.display_name.toUpperCase()
+    username.value = profile.display_name
     user_id.value = profile.id
   }
 
@@ -42,25 +44,26 @@ onMounted(async () => {
   await playlistStore.setAccessToken(clientId, clientSecret)
   accessToken.value = playlistStore.getAccessToken
   await playlistStore.setPlayList(accessToken.value, '37i9dQZF1DX812gZSD3Ky1')
-  albums.value = playlistStore.getPlaylist
+  playlists.value = playlistStore.getPlaylist
 })
 
 const search = async () => {
-  const artist = await albumStore.setArtist(
-    accessToken.value,
-    searchInput.value
-  )
-  await albumStore.setAlbums(accessToken.value, artist)
-  albums.value = albumStore.getAlbums
+  if (searchInput.value.trim()) {
+    const artist = await albumStore.setArtist(
+      accessToken.value,
+      searchInput.value
+    )
+    await albumStore.setAlbums(accessToken.value, artist)
+    albums.value = albumStore.getAlbums
+  }
 }
 
 const getMyplayList = async () => {
   await playlistStore.getMyPlayList(token.value, user_id.value)
-  albums.value = playlistStore.getPlaylist
+  playlists.value = playlistStore.getPlaylist
 }
 
 const addPlaylist = () => {
-  // Function to add a new playlist
   console.log('Add Playlist clicked!')
 }
 </script>
@@ -71,7 +74,6 @@ const addPlaylist = () => {
     <template #icon> </template>
     <template #default>
       <div class="flex justify-between items-center w-full">
-        <!-- Search Input aligned to the right -->
         <div class="flex justify-end items-center w-[30%]">
           <div class="relative w-full">
             <input
@@ -142,9 +144,15 @@ const addPlaylist = () => {
     </div>
   </div>
 
-  <div class="ml-64">
+  <!-- Show playlist by default, but show albums if search input exists -->
+  <div v-if="searchInput && albums.length > 0" class="ml-64">
     <Album :albums="albums" />
   </div>
+
+  <div v-else class="ml-64">
+    <PlayList :playlists="playlists" />
+  </div>
+
   <teleport to="body">
     <LoginModal
       v-if="showModal"

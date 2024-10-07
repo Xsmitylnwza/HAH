@@ -59,6 +59,10 @@ export async function fetchProfile(token) {
     method: 'GET',
     headers: { Authorization: `Bearer ${token}` }
   })
+  if (result.status === 401) {
+    localStorage.removeItem('access_token')
+    window.location.href = 'http://localhost:5173'
+  }
   return await result.json()
 }
 

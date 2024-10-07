@@ -189,6 +189,35 @@ const getAlbumsFromPlaylists = async (playlists, access_token) => {
   }
   return albums
 }
+const fetchSpotifyTrack = async (access_token, trackId) => {
+  const trackResponse = await fetch(
+    `https://api.spotify.com/v1/tracks/${trackId}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
+    }
+  )
+  const trackData = await trackResponse.json()
+  return trackData
+}
+const getAlbumSpotifyTrack = async (access_token, albumId) => {
+  const albumResponse = await fetch(
+    `https://api.spotify.com/v1/albums/${albumId}/tracks`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
+    }
+  )
+  const albumData = await albumResponse.json()
+  return albumData.items
+}
+
 
 export {
   getItems,
@@ -201,5 +230,7 @@ export {
   getArtist,
   getAlbumfromArtist,
   getMyPlaylists,
-  login
+  fetchSpotifyTrack,
+  login,
+  getAlbumSpotifyTrack
 }
