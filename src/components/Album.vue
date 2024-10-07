@@ -1,3 +1,30 @@
+<script setup>
+import { ref } from 'vue'
+import { usePlaylistStore } from '../stores/playlist'
+import TrackList from './TrackList.vue' // Import TrackList component
+
+const props = defineProps({
+  albums: Array
+})
+
+const playlistStore = usePlaylistStore()
+let accessToken = localStorage.getItem('access_token')
+
+const selectedAlbum = ref(null)
+const tracks = ref([])
+
+const click = async (album) => {
+  selectedAlbum.value = album
+  const trackData = await playlistStore.getAlbumSpotifyTrack(
+    accessToken,
+    album.id
+  )
+  console.log(trackData)
+
+  tracks.value = trackData // Update track list
+}
+</script>
+
 <template>
   <div
     v-if="albums.length > 0"
@@ -28,28 +55,3 @@
   <!-- Display TrackList component when an album is clicked -->
   <TrackList v-if="selectedAlbum" :tracks="tracks" :album="selectedAlbum" />
 </template>
-
-<script setup>
-import { ref } from 'vue'
-import { usePlaylistStore } from '../stores/playlist'
-import TrackList from './TrackList.vue' // Import TrackList component
-
-const props = defineProps({
-  albums: Array
-})
-
-const playlistStore = usePlaylistStore()
-let accessToken = localStorage.getItem('access_token')
-
-const selectedAlbum = ref(null)
-const tracks = ref([])
-
-const click = async (album) => {
-  selectedAlbum.value = album
-  const trackData = await playlistStore.getAlbumSpotifyTrack(
-    accessToken,
-    album.id
-  )
-  tracks.value = trackData // Update track list
-}
-</script>

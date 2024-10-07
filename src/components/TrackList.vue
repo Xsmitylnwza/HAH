@@ -7,6 +7,11 @@ const props = defineProps({
 
 <template>
   <div class="p-4">
+    <img
+      :src="album.images[0].url"
+      alt="Album Cover"
+      class="w-[20%] h-[20%] object-cover"
+    />
     <h2 class="text-2xl font-bold">{{ album.name }}</h2>
     <p class="text-gray-600 mb-4">{{ album.artists[0].name }}</p>
 
@@ -14,16 +19,16 @@ const props = defineProps({
       <table class="min-w-full bg-white">
         <thead>
           <tr>
-            <th class="py-2 px-4 bg-gray-200 text-left">#</th>
-            <th class="py-2 px-4 bg-gray-200 text-left">Title</th>
-            <th class="py-2 px-4 bg-gray-200 text-left">Duration</th>
+            <th class="py-2 px-4 bg-gray-900 text-left">#</th>
+            <th class="py-2 px-4 bg-gray-900 text-left">Title</th>
+            <th class="py-2 px-4 bg-gray-900 text-left">Duration</th>
           </tr>
         </thead>
         <tbody>
           <tr
             v-for="(track, index) in tracks"
             :key="track.id"
-            class="hover:bg-gray-100 transition-colors duration-200"
+            class="bg-gray-800 hover:bg-gray-900 transition-colors duration-200"
           >
             <td class="py-2 px-4">{{ index + 1 }}</td>
             <td class="py-2 px-4">{{ track.name }}</td>
