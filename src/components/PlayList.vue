@@ -16,7 +16,6 @@ const click = async (playlist) => {
     accessToken,
     playlist.id
   )
-  console.log(track)
   previewUrl.value = track[0].preview_url
   if (music.value) {
     music.value.load()

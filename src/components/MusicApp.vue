@@ -15,15 +15,15 @@ const clientSecret = '29fc6f15441b451f91885b1b423e5230'
 const accessToken = ref('')
 const searchInput = ref('')
 const albums = ref([])
-const playlists = ref([])
+const playlists = ref([]) // Array of playlists
 const showModal = ref(false)
 const isLoggedIn = ref(false)
 const username = ref('')
 const user_id = ref('')
 const token = ref('')
+const userPlaylist = ref({})
 
 onMounted(async () => {
-  //if login
   const urlParams = new URLSearchParams(window.location.search)
   const code = urlParams.get('code')
   let localAccessToken = localStorage.getItem('access_token')
@@ -38,13 +38,16 @@ onMounted(async () => {
   if (profile) {
     username.value = profile.display_name
     user_id.value = profile.id
+    userPlaylist.value = await playlistStore.getUserPlaylist(
+      user_id.value,
+      token.value
+    )
   }
 
-  //if not login
   await playlistStore.setAccessToken(clientId, clientSecret)
   accessToken.value = playlistStore.getAccessToken
   await playlistStore.setPlayList(accessToken.value, '37i9dQZF1DX812gZSD3Ky1')
-  playlists.value = playlistStore.getPlaylist
+  playlists.value = playlistStore.getPlaylist // Set playlists from the API
 })
 
 const search = async () => {
@@ -58,9 +61,13 @@ const search = async () => {
   }
 }
 
-const getMyplayList = async () => {
-  await playlistStore.getMyPlayList(token.value, user_id.value)
-  playlists.value = playlistStore.getPlaylist
+const getMyplayList = async (playlistsId) => {
+  const playlist = await playlistStore.getAlbumsFromPlaylist(
+    playlistsId,
+    token.value
+  )
+
+  playlists.value = playlist // Update playlists
 }
 
 const addPlaylist = () => {
@@ -69,9 +76,8 @@ const addPlaylist = () => {
 </script>
 
 <template>
-  <!-- Header Grid -->
   <Header :style="{ marginLeft: '256px' }">
-    <template #icon> </template>
+    <template #icon></template>
     <template #default>
       <div class="flex justify-between items-center w-full">
         <div class="flex justify-end items-center w-[30%]">
@@ -106,7 +112,7 @@ const addPlaylist = () => {
             v-else
             class="flex items-center space-x-2 border-2 rounded-full pl-4"
           >
-            <span class="text-white">{{ username }}</span>
+            <span class="text-white"> {{ username }}</span>
             <img
               src="../assets/profile.jpeg"
               alt="Profile Picture"
@@ -134,13 +140,21 @@ const addPlaylist = () => {
         />
       </button>
     </div>
-    <div class="flex mt-2">
-      <button
-        class="hover:bg-slate-700 w-full text-start"
-        @click="getMyplayList"
+
+    <!-- Dynamically render user playlists -->
+    <div class="mt-4">
+      <div
+        v-for="user in userPlaylist"
+        :key="user.id"
+        class="flex flex-col mt-2"
       >
-        <div class="p-4">My Playlist</div>
-      </button>
+        <button
+          class="hover:bg-slate-700 w-full text-start"
+          @click="getMyplayList(user.id)"
+        >
+          <div class="p-4">{{ user.name }}</div>
+        </button>
+      </div>
     </div>
   </div>
 

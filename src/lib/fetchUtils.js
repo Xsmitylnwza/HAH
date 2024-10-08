@@ -105,6 +105,7 @@ const getAccessToken = async (clientId, clientSecret) => {
   const data = await response.json()
   return data.access_token
 }
+
 const getPlayList = async (access_token, playlist) => {
   const playlistResponse = await fetch(
     `https://api.spotify.com/v1/playlists/${playlist}`,
@@ -170,24 +171,20 @@ const getUserPlaylists = async (user_id, access_token) => {
   return playlists.items
 }
 
-const getAlbumsFromPlaylists = async (playlists, access_token) => {
-  const albums = []
-  for (const playlist of playlists) {
-    const trackResponse = await fetch(
-      `https://api.spotify.com/v1/playlists/${playlist.id}/tracks`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + access_token
-        }
+const getAlbumsFromPlaylists = async (playlistsId, access_token) => {
+  const trackResponse = await fetch(
+    `https://api.spotify.com/v1/playlists/${playlistsId}/tracks`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
       }
-    )
-    const tracksData = await trackResponse.json()
-    const playlistAlbums = tracksData.items.map((item) => item.track.album)
-    albums.push(...playlistAlbums)
-  }
-  return albums
+    }
+  )
+  const tracksData = await trackResponse.json()
+  const playlistAlbums = tracksData.items.map((item) => item.track.album)
+  return playlistAlbums
 }
 const fetchSpotifyTrack = async (access_token, trackId) => {
   const trackResponse = await fetch(
@@ -218,7 +215,6 @@ const getAlbumSpotifyTrack = async (access_token, albumId) => {
   return albumData.items
 }
 
-
 export {
   getItems,
   getItemById,
@@ -232,5 +228,7 @@ export {
   getMyPlaylists,
   fetchSpotifyTrack,
   login,
-  getAlbumSpotifyTrack
+  getAlbumSpotifyTrack,
+  getUserPlaylists,
+  getAlbumsFromPlaylists
 }

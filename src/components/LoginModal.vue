@@ -26,7 +26,7 @@ const login = async () => {
     class="fixed inset-0 bg-gray-800 bg-opacity-70 flex items-center justify-center"
   >
     <div
-      class="bg-gradient-to-r from-gray-800 to-gray-900 p-8 rounded-3xl shadow-lg w-96 h-[60%] flex flex-col justify-center relative"
+      class="bg-gradient-to-r from-gray-800 to-gray-900 p-8 rounded-3xl shadow-lg w-96 h-[50%] flex flex-col justify-center relative"
     >
       <h2 class="text-2xl font-semibold mb-4 text-white text-center">
         Login

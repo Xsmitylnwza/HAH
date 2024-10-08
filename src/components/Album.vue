@@ -10,24 +10,30 @@ const props = defineProps({
 const playlistStore = usePlaylistStore()
 let accessToken = localStorage.getItem('access_token')
 
-const selectedAlbum = ref(null)
-const tracks = ref([])
+const selectedAlbum = ref('') 
+const tracks = ref([]) 
+
 
 const click = async (album) => {
-  selectedAlbum.value = album
+  selectedAlbum.value = album 
+
   const trackData = await playlistStore.getAlbumSpotifyTrack(
     accessToken,
     album.id
   )
-  console.log(trackData)
+  tracks.value = trackData // Update the track list with the fetched tracks
+}
 
-  tracks.value = trackData // Update track list
+// Function to handle back button click
+const goBack = () => {
+  selectedAlbum.value = '' // Reset the selected album to show the album list again
 }
 </script>
 
 <template>
+  <!-- Conditionally render the album grid only if no album is selected -->
   <div
-    v-if="albums.length > 0"
+    v-if="!selectedAlbum"
     class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-4 p-4"
   >
     <button
@@ -52,6 +58,19 @@ const click = async (album) => {
     </button>
   </div>
 
-  <!-- Display TrackList component when an album is clicked -->
-  <TrackList v-if="selectedAlbum" :tracks="tracks" :album="selectedAlbum" />
+  <!-- Render the TrackList component and the Back button only if an album is selected -->
+  <div v-if="selectedAlbum">
+    <!-- Back button aligned to the right -->
+    <div class="flex justify-end mb-4">
+      <button
+        @click="goBack"
+        class="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700 transition-colors duration-200"
+      >
+        Back to Albums
+      </button>
+    </div>
+
+    <!-- TrackList component -->
+    <TrackList :tracks="tracks" :album="selectedAlbum" />
+  </div>
 </template>

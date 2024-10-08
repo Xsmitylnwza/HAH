@@ -1,43 +1,70 @@
 <script setup>
+import { ref } from 'vue'
 const props = defineProps({
   tracks: Array,
   album: Object
 })
+let previewUrl = ref('')
+const music = ref('')
+
+const click = async (track) => {
+  previewUrl.value = track.preview_url
+  if (music.value) {
+    if (!music.value.paused) {
+      music.value.pause()
+    }
+    music.value.load()
+    music.value
+      .play()
+      .catch((error) => console.error('Audio playback error:', error))
+  }
+}
 </script>
 
 <template>
   <div class="p-4">
-    <img
-      :src="album.images[0].url"
-      alt="Album Cover"
-      class="w-[20%] h-[20%] object-cover"
-    />
-    <h2 class="text-2xl font-bold">{{ album.name }}</h2>
-    <p class="text-gray-600 mb-4">{{ album.artists[0].name }}</p>
-
+    <div class="flex items-center mb-4">
+      <img
+        :src="album.images[0].url"
+        alt="Album Cover"
+        class="w-[20%] h-[20%] object-cover"
+      />
+      <div class="ml-6">
+        <h2 class="text-3xl font-bold">{{ album.name }}</h2>
+        <p class="text-gray-600">
+          {{ album.artists[0].name }} - {{ album.release_date }}
+        </p>
+      </div>
+    </div>
     <div class="overflow-hidden shadow rounded-lg">
       <table class="min-w-full bg-white">
         <thead>
           <tr>
-            <th class="py-2 px-4 bg-gray-900 text-left">#</th>
-            <th class="py-2 px-4 bg-gray-900 text-left">Title</th>
-            <th class="py-2 px-4 bg-gray-900 text-left">Duration</th>
+            <th class="py-2 px-4 bg-gray-900 text-left text-white">#</th>
+            <th class="py-2 px-4 bg-gray-900 text-left text-white">Title</th>
+            <th class="py-2 px-4 bg-gray-900 text-left text-white">Duration</th>
           </tr>
         </thead>
         <tbody>
           <tr
-            v-for="(track, index) in tracks"
+            v-for="track in tracks"
             :key="track.id"
-            class="bg-gray-800 hover:bg-gray-900 transition-colors duration-200"
+            @click="click(track)"
+            class="bg-gray-800 hover:bg-gray-900 transition-colors duration-200 cursor-pointer"
           >
-            <td class="py-2 px-4">{{ index + 1 }}</td>
-            <td class="py-2 px-4">{{ track.name }}</td>
-            <td class="py-2 px-4">
+            <td class="py-2 px-4 text-white">{{ track.track_number }}</td>
+            <td class="py-2 px-4 text-white">{{ track.name }}</td>
+            <td class="py-2 px-4 text-white">
               {{ (track.duration_ms / 60000).toFixed(2) }} min
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+    <div v-if="previewUrl" class="mt-4">
+      <audio controls class="hidden" ref="music">
+        <source :src="previewUrl" type="audio/mp3" />
+      </audio>
     </div>
   </div>
 </template>
