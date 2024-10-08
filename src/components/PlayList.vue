@@ -12,6 +12,8 @@ let previewUrl = ref('')
 const music = ref('')
 
 const click = async (playlist) => {
+  console.log(playlist)
+
   const track = await playlistStore.getAlbumSpotifyTrack(
     accessToken,
     playlist.id

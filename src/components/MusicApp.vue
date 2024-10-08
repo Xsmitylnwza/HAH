@@ -24,6 +24,7 @@ const username = ref('')
 const user_id = ref('')
 const token = ref('')
 const userPlaylist = ref({})
+const showDropdown = ref('')
 
 onMounted(async () => {
   const urlParams = new URLSearchParams(window.location.search)
@@ -49,7 +50,7 @@ onMounted(async () => {
   await playlistStore.setAccessToken(clientId, clientSecret)
   accessToken.value = playlistStore.getAccessToken
   await playlistStore.setPlayList(accessToken.value, '37i9dQZF1DX812gZSD3Ky1')
-  playlists.value = playlistStore.getPlaylist // Set playlists from the API
+  playlists.value = playlistStore.getPlaylist
 })
 
 const search = async () => {
@@ -72,17 +73,27 @@ const getMyplayList = async (playlistsId) => {
 }
 
 const createPlaylist = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+  await new Promise((resolve) => setTimeout(resolve, 100))
   userPlaylist.value = await playlistStore.getUserPlaylist(
     user_id.value,
     token.value
   )
-
-  console.log(userPlaylist.value)
 }
 
 const toggleCreate = () => {
   showCreatePlaylistModal.value = true // Show the create playlist modal
+}
+
+const toggleDropdown = (userId) => {
+  showDropdown.value = showDropdown.value === userId ? null : userId
+}
+
+const editUser = (userId) => {
+  console.log('Edit user:', userId)
+}
+
+const deleteUser = (userId) => {
+  console.log('Delete user:', userId)
 }
 </script>
 
@@ -150,32 +161,68 @@ const toggleCreate = () => {
         />
       </button>
     </div>
-
     <div class="mt-4">
       <div
         v-for="user in userPlaylist"
         :key="user.id"
-        class="flex flex-col mt-2"
+        class="relative flex justify-between items-center mt-2 hover:bg-slate-700 rounded-lg"
       >
         <button
-          class="hover:bg-slate-700 w-full text-start"
+          class="text-start flex-grow flex items-center"
           @click="getMyplayList(user.id)"
         >
-          <div class="p-4 flex justify-between">
-            <divS>
-              {{ user.name }}
-            </divS>
-            <div class="item-center">
-              <img
-                alt="Vue logo"
-                class="logo cursor-pointer filter brightness-0 invert items-center"
-                src="../assets/options.svg"
-                width="23"
-                height="23"
-              />
-            </div>
+          <div v-if="user.images && user.images[0] && user.images[0].url">
+            <img
+              :src="user.images[0].url"
+              alt="Image"
+              width="70"
+              height="70"
+              class="p-2 object-cover rounded-lg"
+            />
+          </div>
+          <div v-else>
+            <img
+              src="../assets/note.svg"
+              alt="Image"
+              width="70"
+              height="70"
+              class="p-2 filter brightness-0 invert"
+            />
+          </div>
+
+          <div class="p-4">
+            {{ user.name }}
           </div>
         </button>
+
+        <button class="p-4" @click="toggleDropdown(user.id)">
+          <img
+            alt="Vue logo"
+            class="logo cursor-pointer filter brightness-4 invert"
+            src="../assets/options.svg"
+            width="23"
+            height="23"
+          />
+        </button>
+
+        <!-- Dropdown menu -->
+        <div
+          v-if="showDropdown === user.id"
+          class="absolute right-0 top-full mt-2 w-32 bg-white text-black shadow-lg rounded-lg z-10"
+        >
+          <button
+            class="block w-full px-4 py-2 hover:bg-gray-200 text-left rounded-lg"
+            @click="editUser(user.id)"
+          >
+            Edit
+          </button>
+          <button
+            class="block w-full px-4 py-2 hover:bg-gray-200 text-left rounded-lg"
+            @click="deleteUser(user.id)"
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -188,7 +235,6 @@ const toggleCreate = () => {
     <PlayList :playlists="playlists" />
   </div>
 
-  <!-- Teleport for Login Modal -->
   <teleport to="body">
     <LoginModal
       v-if="showModal"
@@ -197,7 +243,6 @@ const toggleCreate = () => {
     />
   </teleport>
 
-  <!-- Teleport for Create Playlist Modal -->
   <teleport to="body">
     <PlaylistFormModal
       v-if="showCreatePlaylistModal"

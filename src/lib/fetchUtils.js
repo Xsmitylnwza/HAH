@@ -220,23 +220,37 @@ const createPlaylist = async (access_token, user_id, newPlayList) => {
       body: JSON.stringify(newPlayList)
     }
   )
-
-  // ตรวจสอบว่าเพลย์ลิสต์ถูกสร้างหรือไม่
   const playlist = await response.json()
-  console.log(playlist)
+  return playlist
+}
 
-  // ถ้าเพลย์ลิสต์ถูกสร้างสำเร็จ
-  if (response.ok) {
-    // เรียกเพลย์ลิสต์ทั้งหมดของผู้ใช้
-    const userPlaylists = await getUserPlaylists(user_id, access_token)
+const editPlaylist = async (access_token, playlist_id, newPlayList) => {
+  const response = await fetch(
+    `https://api.spotify.com/v1/playlists/${playlist_id}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      },
+      body: JSON.stringify(newPlayList)
+    }
+  )
+  const playlist = await response.json()
+  return playlist
+}
 
-    // เพิ่มเพลย์ลิสต์ใหม่เข้าไปในรายการ
-    userPlaylists.push(playlist)
-
-    return userPlaylists
-  } else {
-    throw new Error('Failed to create playlist: ' + playlist.error.message)
-  }
+const deletePlaylist = async (access_token, playlist_id) => {
+  const response = await fetch(
+    `https://api.spotify.com/v1/playlists/${playlist_id}/followers`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
+    }
+  )
 }
 
 export {
@@ -254,5 +268,7 @@ export {
   getAlbumSpotifyTrack,
   getUserPlaylists,
   getAlbumsFromPlaylists,
-  createPlaylist
+  createPlaylist,
+  editPlaylist,
+  deletePlaylist
 }
