@@ -150,12 +150,6 @@ const getAlbumfromArtist = async (access_token, artist) => {
   return albumData.items
 }
 
-const getMyPlaylists = async (user_id, access_token) => {
-  const playlists = await getUserPlaylists(user_id, access_token)
-  const albums = await getAlbumsFromPlaylists(playlists, access_token)
-  return albums
-}
-
 const getUserPlaylists = async (user_id, access_token) => {
   const response = await fetch(
     `https://api.spotify.com/v1/users/${user_id}/playlists`,
@@ -214,6 +208,36 @@ const getAlbumSpotifyTrack = async (access_token, albumId) => {
   const albumData = await albumResponse.json()
   return albumData.items
 }
+const createPlaylist = async (access_token, user_id, newPlayList) => {
+  const response = await fetch(
+    `https://api.spotify.com/v1/users/${user_id}/playlists`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      },
+      body: JSON.stringify(newPlayList)
+    }
+  )
+
+  // ตรวจสอบว่าเพลย์ลิสต์ถูกสร้างหรือไม่
+  const playlist = await response.json()
+  console.log(playlist)
+
+  // ถ้าเพลย์ลิสต์ถูกสร้างสำเร็จ
+  if (response.ok) {
+    // เรียกเพลย์ลิสต์ทั้งหมดของผู้ใช้
+    const userPlaylists = await getUserPlaylists(user_id, access_token)
+
+    // เพิ่มเพลย์ลิสต์ใหม่เข้าไปในรายการ
+    userPlaylists.push(playlist)
+
+    return userPlaylists
+  } else {
+    throw new Error('Failed to create playlist: ' + playlist.error.message)
+  }
+}
 
 export {
   getItems,
@@ -225,10 +249,10 @@ export {
   getPlayList,
   getArtist,
   getAlbumfromArtist,
-  getMyPlaylists,
   fetchSpotifyTrack,
   login,
   getAlbumSpotifyTrack,
   getUserPlaylists,
-  getAlbumsFromPlaylists
+  getAlbumsFromPlaylists,
+  createPlaylist
 }

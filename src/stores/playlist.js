@@ -3,10 +3,10 @@ import {
   getAccessToken,
   getUserPlaylists,
   getPlayList,
-  getMyPlaylists,
   fetchSpotifyTrack,
   getAlbumSpotifyTrack,
-  getAlbumsFromPlaylists
+  getAlbumsFromPlaylists,
+  createPlaylist
 } from '../lib/fetchUtils'
 
 export const usePlaylistStore = defineStore('playlist', {
@@ -39,14 +39,6 @@ export const usePlaylistStore = defineStore('playlist', {
         console.error(e)
       }
     },
-    async getMyPlayList(accessToken, user_id) {
-      try {
-        const response = await getMyPlaylists(user_id, accessToken)
-        this.playlist = response
-      } catch (e) {
-        console.error(e)
-      }
-    },
     async getSpotifyTrack(accessToken, trackId) {
       try {
         const response = await fetchSpotifyTrack(accessToken, trackId)
@@ -74,6 +66,14 @@ export const usePlaylistStore = defineStore('playlist', {
     async getAlbumsFromPlaylist(playlistsId, accessToken) {
       try {
         const response = await getAlbumsFromPlaylists(playlistsId, accessToken)
+        return response
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    async createPlaylist(accessToken, user_id, newPlayList) {
+      try {
+        const response = await createPlaylist(accessToken, user_id, newPlayList)
         return response
       } catch (e) {
         console.error(e)

@@ -7,6 +7,7 @@ import { usePlaylistStore } from '../stores/playlist'
 import { useAlbumStore } from '../stores/album'
 import { fetchProfileFromStorage, getAccessToken } from '../stores/login'
 import PlayList from './PlayList.vue'
+import PlaylistFormModal from './PlaylistFormModal.vue'
 
 const albumStore = useAlbumStore()
 const playlistStore = usePlaylistStore()
@@ -17,6 +18,7 @@ const searchInput = ref('')
 const albums = ref([])
 const playlists = ref([]) // Array of playlists
 const showModal = ref(false)
+const showCreatePlaylistModal = ref(false) // For controlling the playlist modal
 const isLoggedIn = ref(false)
 const username = ref('')
 const user_id = ref('')
@@ -30,7 +32,7 @@ onMounted(async () => {
   if (localAccessToken) {
     token.value = localAccessToken
   } else if (code) {
-    await getAccessToken(clientId, code)
+    token.value = await getAccessToken(clientId, code)
     isLoggedIn.value = true
   }
   if (code) isLoggedIn.value = true
@@ -66,12 +68,21 @@ const getMyplayList = async (playlistsId) => {
     playlistsId,
     token.value
   )
-
-  playlists.value = playlist // Update playlists
+  playlists.value = playlist
 }
 
-const addPlaylist = () => {
-  console.log('Add Playlist clicked!')
+const createPlaylist = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+  userPlaylist.value = await playlistStore.getUserPlaylist(
+    user_id.value,
+    token.value
+  )
+
+  console.log(userPlaylist.value)
+}
+
+const toggleCreate = () => {
+  showCreatePlaylistModal.value = true // Show the create playlist modal
 }
 </script>
 
@@ -99,7 +110,6 @@ const addPlaylist = () => {
           </div>
         </div>
 
-        <!-- Login/Profile Button on the right -->
         <div class="flex items-center space-x-2">
           <button
             v-if="!isLoggedIn"
@@ -128,7 +138,7 @@ const addPlaylist = () => {
     <div class="p-4 flex justify-between items-center">
       <h2 class="text-3xl font-bold">Rainlight Riot</h2>
       <button
-        @click="addPlaylist"
+        @click="toggleCreate"
         class="flex items-center justify-center transition-transform duration-300 hover:scale-110 rounded-full bg-slate-500 hover:bg-slate-600"
       >
         <img
@@ -141,7 +151,6 @@ const addPlaylist = () => {
       </button>
     </div>
 
-    <!-- Dynamically render user playlists -->
     <div class="mt-4">
       <div
         v-for="user in userPlaylist"
@@ -152,13 +161,25 @@ const addPlaylist = () => {
           class="hover:bg-slate-700 w-full text-start"
           @click="getMyplayList(user.id)"
         >
-          <div class="p-4">{{ user.name }}</div>
+          <div class="p-4 flex justify-between">
+            <divS>
+              {{ user.name }}
+            </divS>
+            <div class="item-center">
+              <img
+                alt="Vue logo"
+                class="logo cursor-pointer filter brightness-0 invert items-center"
+                src="../assets/options.svg"
+                width="23"
+                height="23"
+              />
+            </div>
+          </div>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Show playlist by default, but show albums if search input exists -->
   <div v-if="searchInput && albums.length > 0" class="ml-64">
     <Album :albums="albums" />
   </div>
@@ -167,11 +188,21 @@ const addPlaylist = () => {
     <PlayList :playlists="playlists" />
   </div>
 
+  <!-- Teleport for Login Modal -->
   <teleport to="body">
     <LoginModal
       v-if="showModal"
       @close="showModal = false"
       @login="isLoggedIn = true"
+    />
+  </teleport>
+
+  <!-- Teleport for Create Playlist Modal -->
+  <teleport to="body">
+    <PlaylistFormModal
+      v-if="showCreatePlaylistModal"
+      @create="createPlaylist"
+      @close="showCreatePlaylistModal = false"
     />
   </teleport>
 </template>
