@@ -16,9 +16,9 @@ const clientSecret = '29fc6f15441b451f91885b1b423e5230'
 const accessToken = ref('')
 const searchInput = ref('')
 const albums = ref([])
-const playlists = ref([]) // Array of playlists
+const tracks = ref([])
 const showModal = ref(false)
-const showCreatePlaylistModal = ref(false) // For controlling the playlist modal
+const showCreatePlaylistModal = ref(false)
 const isLoggedIn = ref(false)
 const username = ref('')
 const user_id = ref('')
@@ -50,8 +50,11 @@ onMounted(async () => {
 
   await playlistStore.setAccessToken(clientId, clientSecret)
   accessToken.value = playlistStore.getAccessToken
-  await playlistStore.setPlayList(accessToken.value, '37i9dQZF1DX812gZSD3Ky1')
-  playlists.value = playlistStore.getPlaylist
+  await playlistStore.getTrackByPlaylist(
+    accessToken.value,
+    '37i9dQZF1DX812gZSD3Ky1'
+  )
+  tracks.value = playlistStore.getTracks
 })
 
 const search = async () => {
@@ -66,11 +69,11 @@ const search = async () => {
 }
 
 const getMyplayList = async (playlistsId) => {
-  const playlist = await playlistStore.getAlbumsFromPlaylist(
+  const track = await playlistStore.getTrackByPlaylistsIds(
     playlistsId,
     token.value
   )
-  playlists.value = playlist
+  tracks.value = track
 }
 
 const createPlaylist = async () => {
@@ -235,7 +238,7 @@ const deleteUser = (userId) => {
   </div>
 
   <div v-else class="ml-64">
-    <PlayList :playlists="playlists" />
+    <PlayList :tracks="tracks" />
   </div>
 
   <teleport to="body">

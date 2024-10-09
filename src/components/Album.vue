@@ -10,28 +10,23 @@ const props = defineProps({
 const playlistStore = usePlaylistStore()
 let accessToken = localStorage.getItem('access_token')
 
-const selectedAlbum = ref('') 
-const tracks = ref([]) 
-
+const selectedAlbum = ref('')
+const tracks = ref([])
 
 const click = async (album) => {
-  selectedAlbum.value = album 
+  console.log(album)
 
-  const trackData = await playlistStore.getAlbumSpotifyTrack(
-    accessToken,
-    album.id
-  )
-  tracks.value = trackData // Update the track list with the fetched tracks
+  selectedAlbum.value = album
+
+  const trackData = await playlistStore.getTrack(accessToken, album.id)
+  tracks.value = trackData
 }
-
-// Function to handle back button click
 const goBack = () => {
-  selectedAlbum.value = '' // Reset the selected album to show the album list again
+  selectedAlbum.value = ''
 }
 </script>
 
 <template>
-  <!-- Conditionally render the album grid only if no album is selected -->
   <div
     v-if="!selectedAlbum"
     class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-4 p-4"

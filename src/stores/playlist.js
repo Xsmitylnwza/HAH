@@ -3,15 +3,15 @@ import {
   getAccessToken,
   getUserPlaylists,
   getPlayList,
-  fetchSpotifyTrack,
-  getAlbumSpotifyTrack,
-  getAlbumsFromPlaylists,
+  getTrack,
+  getTrackByPlaylistsId,
   createPlaylist
 } from '../lib/fetchUtils'
 
 export const usePlaylistStore = defineStore('playlist', {
   state: () => ({
     playlist: [],
+    tracks: [],
     accessToken: ''
   }),
   getters: {
@@ -20,6 +20,9 @@ export const usePlaylistStore = defineStore('playlist', {
     },
     getPlaylist: (state) => {
       return state.playlist
+    },
+    getTracks: (state) => {
+      return state.tracks
     }
   },
   actions: {
@@ -31,26 +34,18 @@ export const usePlaylistStore = defineStore('playlist', {
         console.error(e)
       }
     },
-    async setPlayList(accessToken, playlistId) {
+    async getTrackByPlaylist(accessToken, playlistId) {
       try {
         const response = await getPlayList(accessToken, playlistId)
-        this.playlist = response
+        this.tracks = response.tracks.items.map((item) => item.track.album)
         return response
       } catch (e) {
         console.error(e)
       }
     },
-    async getSpotifyTrack(accessToken, trackId) {
+    async getTrack(accessToken, id) {
       try {
-        const response = await fetchSpotifyTrack(accessToken, trackId)
-        return response
-      } catch (e) {
-        console.error(e)
-      }
-    },
-    async getAlbumSpotifyTrack(accessToken, albumId) {
-      try {
-        const response = await getAlbumSpotifyTrack(accessToken, albumId)
+        const response = await getTrack(accessToken, id)
         return response
       } catch (e) {
         console.error(e)
@@ -64,9 +59,9 @@ export const usePlaylistStore = defineStore('playlist', {
         console.error(e)
       }
     },
-    async getAlbumsFromPlaylist(playlistsId, accessToken) {
+    async getTrackByPlaylistsIds(playlistsId, accessToken) {
       try {
-        const response = await getAlbumsFromPlaylists(playlistsId, accessToken)
+        const response = await getTrackByPlaylistsId(playlistsId, accessToken)
         return response
       } catch (e) {
         console.error(e)
