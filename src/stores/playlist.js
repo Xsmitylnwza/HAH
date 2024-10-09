@@ -35,6 +35,7 @@ export const usePlaylistStore = defineStore('playlist', {
       try {
         const response = await getPlayList(accessToken, playlistId)
         this.playlist = response
+        return response
       } catch (e) {
         console.error(e)
       }

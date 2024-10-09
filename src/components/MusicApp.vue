@@ -25,6 +25,7 @@ const user_id = ref('')
 const token = ref('')
 const userPlaylist = ref({})
 const showDropdown = ref('')
+const mode = ref('')
 
 onMounted(async () => {
   const urlParams = new URLSearchParams(window.location.search)
@@ -81,15 +82,17 @@ const createPlaylist = async () => {
 }
 
 const toggleCreate = () => {
-  showCreatePlaylistModal.value = true // Show the create playlist modal
+  mode.value = 'create'
+  showCreatePlaylistModal.value = true
 }
 
 const toggleDropdown = (userId) => {
   showDropdown.value = showDropdown.value === userId ? null : userId
 }
 
-const editUser = (userId) => {
-  console.log('Edit user:', userId)
+const toggleEdit = async () => {
+  mode.value = 'edit'
+  showCreatePlaylistModal.value = true
 }
 
 const deleteUser = (userId) => {
@@ -212,7 +215,7 @@ const deleteUser = (userId) => {
         >
           <button
             class="block w-full px-4 py-2 hover:bg-gray-200 text-left rounded-lg"
-            @click="editUser(user.id)"
+            @click="toggleEdit(user.id)"
           >
             Edit
           </button>
@@ -248,6 +251,7 @@ const deleteUser = (userId) => {
       v-if="showCreatePlaylistModal"
       @create="createPlaylist"
       @close="showCreatePlaylistModal = false"
+      :mode="mode"
     />
   </teleport>
 </template>
