@@ -8,6 +8,7 @@ import { useAlbumStore } from '../stores/album'
 import { fetchProfileFromStorage, getAccessToken } from '../stores/login'
 import PlayList from './PlayList.vue'
 import PlaylistFormModal from './PlaylistFormModal.vue'
+import DeleteModal from './DeleteModal.vue'
 
 const albumStore = useAlbumStore()
 const playlistStore = usePlaylistStore()
@@ -26,6 +27,8 @@ const token = ref('')
 const userPlaylist = ref({})
 const showDropdown = ref('')
 const mode = ref('')
+const selectedPlaylistId = ref('')
+const showDelete = ref(false)
 
 onMounted(async () => {
   const urlParams = new URLSearchParams(window.location.search)
@@ -76,12 +79,19 @@ const getMyplayList = async (playlistsId) => {
   tracks.value = track
 }
 
-const createPlaylist = async () => {
+const createOrEditPlaylist = async () => {
   await new Promise((resolve) => setTimeout(resolve, 100))
   userPlaylist.value = await playlistStore.getUserPlaylist(
     user_id.value,
     token.value
   )
+}
+const handleDelete = async () => {
+  userPlaylist.value = await playlistStore.getUserPlaylist(
+    user_id.value,
+    token.value
+  )
+  showDelete.value = false
 }
 
 const toggleCreate = () => {
@@ -93,13 +103,17 @@ const toggleDropdown = (userId) => {
   showDropdown.value = showDropdown.value === userId ? null : userId
 }
 
-const toggleEdit = async () => {
+const toggleEdit = async (playlistsId) => {
   mode.value = 'edit'
   showCreatePlaylistModal.value = true
+  selectedPlaylistId.value = playlistsId
 }
 
-const deleteUser = (userId) => {
-  console.log('Delete user:', userId)
+const deleteUser = (playlistsId) => {
+  console.log(showDelete.value)
+
+  selectedPlaylistId.value = playlistsId
+  showDelete.value = true
 }
 </script>
 
@@ -151,7 +165,9 @@ const deleteUser = (userId) => {
     </template>
   </Header>
 
-  <div class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-lg">
+  <div
+    class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-lg overflow-y-auto"
+  >
     <div class="p-4 flex justify-between items-center">
       <h2 class="text-3xl font-bold">Rainlight Riot</h2>
       <button
@@ -252,9 +268,21 @@ const deleteUser = (userId) => {
   <teleport to="body">
     <PlaylistFormModal
       v-if="showCreatePlaylistModal"
-      @create="createPlaylist"
+      @create="createOrEditPlaylist"
       @close="showCreatePlaylistModal = false"
       :mode="mode"
+      :playlist="userPlaylist"
+      :playlistId="selectedPlaylistId"
+    />
+  </teleport>
+
+  <teleport to="body">
+    <DeleteModal
+      v-if="showDelete"
+      message="Are you sure you want to delete this playlist?"
+      @confirm="handleDelete"
+      @cancel="showDelete = false"
+      :playlistId="selectedPlaylistId"
     />
   </teleport>
 </template>

@@ -1,6 +1,6 @@
 <script setup>
 import { usePlaylistStore } from '../stores/playlist'
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { fetchProfileFromStorage } from '../stores/login'
 
 const playlistStore = usePlaylistStore()
@@ -12,7 +12,11 @@ const props = defineProps({
     required: true
   },
   playlist: {
-    type: String,
+    type: Array, // รับ playlist เป็น array
+    required: false
+  },
+  playlistId: {
+    type: String, // The specific playlist ID to edit
     required: false
   }
 })
@@ -36,6 +40,17 @@ onMounted(async () => {
   if (profile) {
     user_id.value = profile.id
   }
+
+  if (props.mode === 'edit' && props.playlist.length > 0) {
+    const selectedPlaylist = props.playlist.find(
+      (p) => p.id === props.playlistId
+    )
+    if (selectedPlaylist) {
+      newPlaylistName.value = selectedPlaylist.name
+      playlistDescription.value = selectedPlaylist.description
+      playlistsPublic.value = selectedPlaylist.public
+    }
+  }
 })
 
 const createOrEditPlaylist = () => {
@@ -45,13 +60,13 @@ const createOrEditPlaylist = () => {
       description: playlistDescription.value,
       public: playlistsPublic.value
     }
+
     if (props.mode === 'edit') {
-      playlistStore.updatePlaylist(token, props.playlist.id, newPlayList.value)
+      playlistStore.updatePlaylist(token, props.playlistId, newPlayList.value)
     } else {
       playlistStore.createPlaylist(token, user_id.value, newPlayList.value)
     }
 
-    // Reset fields after creating/editing
     newPlaylistName.value = ''
     playlistDescription.value = ''
     playlistsPublic.value = false
@@ -79,14 +94,14 @@ const emit = defineEmits(['create', 'close'])
       <input
         v-model="newPlaylistName"
         type="text"
-        class="w-full p-2 mb-4 border border-gray-300 rounded text-black"
+        class="w-full p-2 mb-4 border border-gray-300 rounded text-white"
         placeholder="Playlist Name"
       />
 
       <input
         v-model="playlistDescription"
         type="text"
-        class="w-full p-2 mb-4 border border-gray-300 rounded text-black"
+        class="w-full p-2 mb-4 border border-gray-300 rounded text-white"
         placeholder="Playlist Description"
       />
 

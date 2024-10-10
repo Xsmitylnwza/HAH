@@ -14,10 +14,7 @@ const selectedAlbum = ref('')
 const tracks = ref([])
 
 const click = async (album) => {
-  console.log(album)
-
   selectedAlbum.value = album
-
   const trackData = await playlistStore.getTrack(accessToken, album.id)
   tracks.value = trackData
 }

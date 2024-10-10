@@ -212,32 +212,24 @@ const createPlaylist = async (access_token, user_id, newPlayList) => {
 }
 
 const editPlaylist = async (access_token, playlist_id, newPlayList) => {
-  const response = await fetch(
-    `https://api.spotify.com/v1/playlists/${playlist_id}`,
-    {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + access_token
-      },
-      body: JSON.stringify(newPlayList)
-    }
-  )
-  const playlist = await response.json()
-  return playlist
+  await fetch(`https://api.spotify.com/v1/playlists/${playlist_id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + access_token
+    },
+    body: JSON.stringify(newPlayList)
+  })
 }
 
 const deletePlaylist = async (access_token, playlist_id) => {
-  const response = await fetch(
-    `https://api.spotify.com/v1/playlists/${playlist_id}/followers`,
-    {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + access_token
-      }
+  await fetch(`https://api.spotify.com/v1/playlists/${playlist_id}/followers`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + access_token
     }
-  )
+  })
 }
 
 export {

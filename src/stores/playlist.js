@@ -5,7 +5,9 @@ import {
   getPlayList,
   getTrack,
   getTrackByPlaylistsId,
-  createPlaylist
+  createPlaylist,
+  editPlaylist,
+  deletePlaylist
 } from '../lib/fetchUtils'
 
 export const usePlaylistStore = defineStore('playlist', {
@@ -71,6 +73,20 @@ export const usePlaylistStore = defineStore('playlist', {
       try {
         const response = await createPlaylist(accessToken, user_id, newPlayList)
         return response
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    async updatePlaylist(accessToken, playlistId, newPlayList) {
+      try {
+        await editPlaylist(accessToken, playlistId, newPlayList)
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    async deletePlaylists(accessToken, playlistId) {
+      try {
+        await deletePlaylist(accessToken, playlistId)
       } catch (e) {
         console.error(e)
       }
