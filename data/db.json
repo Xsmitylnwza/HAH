@@ -9,6 +9,11 @@
       "username": "jane_smith",
       "password": "securePassword",
       "clientId": "anotherClientId"
+    },
+    {
+      "username": "praewa",
+      "password": "123456",
+      "clientId": "33582544dfb6432faed014f9b1c26e67"
     }
   ]
 }

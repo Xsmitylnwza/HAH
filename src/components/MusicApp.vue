@@ -12,8 +12,8 @@ import DeleteModal from './DeleteModal.vue'
 
 const albumStore = useAlbumStore()
 const playlistStore = usePlaylistStore()
-const clientId = '904da645d0e64016ab25cbfc9ce444a4'
-const clientSecret = '29fc6f15441b451f91885b1b423e5230'
+const clientId = '33582544dfb6432faed014f9b1c26e67'
+const clientSecret = 'a2c9aa3cbf4c46759fa31a922968d913'
 const accessToken = ref('')
 const searchInput = ref('')
 const albums = ref([])

@@ -1,6 +1,8 @@
 <script setup>
 import { usePlaylistStore } from '../stores/playlist'
 import { ref } from 'vue'
+import MusicPlayer from './MusicPlayer.vue'
+
 const props = defineProps({
   tracks: Array
 })
@@ -8,17 +10,44 @@ const props = defineProps({
 const playlistStore = usePlaylistStore()
 let accessToken = localStorage.getItem('access_token')
 
-let previewUrl = ref('')
-const music = ref('')
+const previewUrl = ref('')
+const currentTrack = ref(null)
+const currentTime = ref(0);
+const audioDuration = ref(0);
+const isPlaying = ref(false);
 
 const click = async (track) => {
-  const tracks = await playlistStore.getTrack(accessToken, track.id)
-  previewUrl.value = tracks[0].preview_url
-  if (music.value) {
-    music.value.load()
-    music.value.play()
+  try {
+    const tracks = await playlistStore.getTrack(accessToken, track.id);
+    if (tracks && tracks.length > 0) {
+      const firstTrack = tracks[0]; 
+
+      if (firstTrack.preview_url) {
+        previewUrl.value = firstTrack.preview_url;
+        currentTrack.value = track; 
+      } else {
+        resetPlayer();
+      }
+    } else {
+      resetPlayer(); 
+    }
+  } catch (error) {
+    console.error('Error fetching track:', error);
+    resetPlayer(); 
   }
-}
+};
+
+
+const resetPlayer = () => {
+  previewUrl.value = null;
+  currentTrack.value = null;
+  currentTime.value = 0;
+  audioDuration.value = 0;
+  isPlaying.value = false;
+};
+
+
+
 </script>
 
 <template>
@@ -52,11 +81,9 @@ const click = async (track) => {
     <p class="text-center text-gray-500">No playlists found.</p>
   </div>
 
-  <div v-if="previewUrl" class="mt-4">
-    <audio controls class="hidden" ref="music">
-      <source :src="previewUrl" type="audio/mp3" />
-    </audio>
-  </div>
+  <MusicPlayer v-if="currentTrack" :previewUrl="previewUrl" :currentTrack="currentTrack" />
 </template>
 
-<style scoped></style>
+<style scoped>
+
+</style>
