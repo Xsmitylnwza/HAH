@@ -1,5 +1,9 @@
 import { defineStore } from 'pinia'
-import { getArtist, getAlbumfromArtist } from '../lib/fetchUtils'
+import {
+  getArtist,
+  getAlbumfromArtist,
+  getArtisttopTracks
+} from '../lib/fetchUtils'
 
 export const useAlbumStore = defineStore('album', {
   state: () => ({
@@ -26,6 +30,14 @@ export const useAlbumStore = defineStore('album', {
         const response = await getAlbumfromArtist(accessToken, albumId)
         this.album = response
         return this.album
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    async getArtisttopTrack(accessToken, artistId) {
+      try {
+        const response = await getArtisttopTracks(accessToken, artistId)
+        return response
       } catch (e) {
         console.error(e)
       }

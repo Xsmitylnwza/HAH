@@ -137,7 +137,7 @@ const getArtist = async (access_token, artist) => {
 }
 const getAlbumfromArtist = async (access_token, artist) => {
   const returnAlbums = await fetch(
-    `https://api.spotify.com/v1/artists/${artist.artists.items[0].id}/albums?include_groups=album&market=US&limit=50`,
+    `https://api.spotify.com/v1/artists/${artist.artists.items[0].id}/albums?include_groups=album&limit=50`,
     {
       method: 'GET',
       headers: {
@@ -232,6 +232,21 @@ const deletePlaylist = async (access_token, playlist_id) => {
   })
 }
 
+const getArtisttopTracks = async (access_token, artistId) => {
+  const trackResponse = await fetch(
+    `https://api.spotify.com/v1/artists/${artistId}/top-tracks`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
+    }
+  )
+  const trackData = await trackResponse.json()
+  return trackData
+}
+
 export {
   getItems,
   getItemById,
@@ -248,5 +263,6 @@ export {
   getTrackByPlaylistsId,
   createPlaylist,
   editPlaylist,
-  deletePlaylist
+  deletePlaylist,
+  getArtisttopTracks
 }
