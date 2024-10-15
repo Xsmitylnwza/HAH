@@ -8,6 +8,13 @@ import MusicApp from './components/MusicApp.vue'
     <MusicApp />
     <!-- <RouterView />m -->
   </div>
+  <div>
+    <nav>
+      <router-link to="/">Home</router-link> |
+      <router-link to="/createmysong">Create My Song</router-link>
+    </nav>
+    <router-view></router-view>
+  </div>
 </template>
 
 <style scoped></style>

@@ -6,7 +6,7 @@ export async function redirectToAuthCodeFlow(clientId) {
   const params = new URLSearchParams()
   params.append('client_id', clientId)
   params.append('response_type', 'code')
-  params.append('redirect_uri', 'http://localhost:5173/callback')
+  params.append('redirect_uri', 'http://localhost:5174/callback')
   params.append(
     'scope',
     'user-read-private user-read-email playlist-modify-public playlist-modify-private playlist-read-private'
@@ -42,7 +42,7 @@ export async function getAccessToken(clientId, code) {
   params.append('client_id', clientId)
   params.append('grant_type', 'authorization_code')
   params.append('code', code)
-  params.append('redirect_uri', 'http://localhost:5173/callback')
+  params.append('redirect_uri', 'http://localhost:5174/callback')
   params.append('code_verifier', verifier)
 
   const result = await fetch('https://accounts.spotify.com/api/token', {
@@ -64,7 +64,7 @@ export async function fetchProfile(token) {
   })
   if (result.status === 401) {
     localStorage.clear()
-    window.location.href = 'http://localhost:5173'
+    window.location.href = 'http://localhost:5174'
   }
   return await result.json()
 }
