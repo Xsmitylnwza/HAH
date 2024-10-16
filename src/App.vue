@@ -5,15 +5,7 @@ import MusicApp from './components/MusicApp.vue'
 
 <template>
   <div>
-    <!-- <MusicApp /> -->
     <RouterView />
-  </div>
-  <div>
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/createmysong">Create My Song</router-link>
-    </nav>
-    <router-view></router-view>
   </div>
 </template>
 

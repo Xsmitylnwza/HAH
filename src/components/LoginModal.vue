@@ -14,7 +14,7 @@ const clientId = ref('')
 
 const login = async () => {
   await userStore.login(username.value, password.value)
-  clientId.value = userStore.getClientId
+  clientId.value = userStore.getUser
   if (clientId.value) {
     redirectToAuthCodeFlow(clientId.value)
     $emit('login')

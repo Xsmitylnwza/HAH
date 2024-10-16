@@ -77,7 +77,7 @@ export async function fetchProfile(token) {
   })
   if (result.status === 401) {
     localStorage.clear()
-    window.location.href = 'http://localhost:5173/music'
+    router.push({ path: '/music' })
   }
   return await result.json()
 }

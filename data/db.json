@@ -9,12 +9,14 @@
     {
       "username": "praewa",
       "password": "123456",
-      "clientId": "33582544dfb6432faed014f9b1c26e67"
+      "clientId": "33582544dfb6432faed014f9b1c26e67",
+      "clientSecret": "29fc6f15441b451f91885b1b423e5230"
     },
     {
       "username": "ikkeweww",
       "password": "123456",
-      "clientId": "4728188e9b44412682442a7f74f7cce3"
+      "clientId": "4728188e9b44412682442a7f74f7cce3",
+      "clientSecret": "29fc6f15441b451f91885b1b423e5230"
     }
   ]
 }

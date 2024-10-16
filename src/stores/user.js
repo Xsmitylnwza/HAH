@@ -1,16 +1,14 @@
 import { login, getItems, getItemById } from '@/lib/fetchUtils'
 import { defineStore } from 'pinia'
-const url = 'http://localhost:5000/users'
+const url = 'http://localhost:5001/users'
 export const useUserStore = defineStore('user', {
   state: () => ({
     user: '',
-    clientSecret: '',
-    clientId: ''
+    clientSecret: ''
   }),
   getters: {
     getUser: (state) => state.user,
-    getClientId: (state) => state.clientId,
-    getClientSecret: (state) => state.clientSecret,
+    getclientSecret: (state) => state.clientSecret,
     getUserById: (state) => (id) => {
       return state.user.find((user) => user.id === id)
     }
@@ -19,7 +17,9 @@ export const useUserStore = defineStore('user', {
     async login(username, password) {
       try {
         const response = await login(username, password)
-        this.clientId = response.clientId
+        console.log(response.clientId)
+
+        this.user = response.clientId
         return response.clientId
       } catch (e) {
         console.error(e)
