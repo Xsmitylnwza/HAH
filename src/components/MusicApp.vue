@@ -28,6 +28,7 @@ const userPlaylist = ref({})
 const showDropdown = ref('')
 const selectedPlaylistId = ref('')
 const showDelete = ref(false)
+const showCreateMySong = ref(false)
 
 onMounted(async () => {
   const code = localStorage.getItem('code')
@@ -124,20 +125,11 @@ const login = () => {
       <div class="flex justify-between items-center w-full">
         <div class="flex justify-end items-center w-[30%]">
           <div class="relative w-full">
-            <input
-              type="text"
-              v-model="searchInput"
-              placeholder="Search for an artist"
+            <input type="text" v-model="searchInput" placeholder="Search for an artist"
               class="w-full pl-10 pr-4 py-4 rounded-3xl border border-gray-300 text-lg shadow-md focus:outline-none"
-              @input="search"
-            />
-            <img
-              alt="Search icon"
-              class="absolute left-3 top-1/2 transform -translate-y-1/2 filter brightness-0 invert"
-              src="../assets/search.svg"
-              width="20"
-              height="20"
-            />
+              @input="search" />
+            <img alt="Search icon" class="absolute left-3 top-1/2 transform -translate-y-1/2 filter brightness-0 invert"
+              src="../assets/search.svg" width="20" height="20" />
           </div>
         </div>
 
@@ -149,67 +141,40 @@ const login = () => {
           >
             Login
           </button>
-          <div
-            v-else
-            class="flex items-center space-x-2 border-2 rounded-full pl-4"
-          >
+          <div v-else class="flex items-center space-x-2 border-2 rounded-full pl-4">
             <span class="text-white"> {{ username }}</span>
-            <img
-              src="../assets/profile.jpeg"
-              alt="Profile Picture"
-              class="w-12 h-12 rounded-full"
-            />
+            <img src="../assets/profile.jpeg" alt="Profile Picture" class="w-12 h-12 rounded-full" />
           </div>
         </div>
       </div>
     </template>
   </Header>
 
-  <div
-    class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-lg overflow-y-auto"
-  >
+  <div class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-lg overflow-y-auto">
     <div class="p-4 flex justify-between items-center">
       <h2 class="text-3xl font-bold">Rainlight Riot</h2>
-      <button
-        @click="toggleCreate"
-        class="flex items-center justify-center transition-transform duration-300 hover:scale-110 rounded-full bg-slate-500 hover:bg-slate-600"
-      >
-        <img
-          alt="Vue logo"
-          class="logo cursor-pointer"
-          src="../assets/plus.svg"
-          width="35"
-          height="35"
-        />
+      <button @click="toggleCreate"
+        class="flex items-center justify-center transition-transform duration-300 hover:scale-110 rounded-full bg-slate-500 hover:bg-slate-600">
+        <img alt="Vue logo" class="logo cursor-pointer" src="../assets/plus.svg" width="35" height="35" />
       </button>
     </div>
+
+    <!-- ปุ่ม My Song -->
+  
+    <createMySong />
+   
+
+
+
     <div class="mt-4">
-      <div
-        v-for="user in userPlaylist"
-        :key="user.id"
-        class="relative flex justify-between items-center mt-2 hover:bg-slate-700 rounded-lg"
-      >
-        <button
-          class="text-start flex-grow flex items-center"
-          @click="getMyplayList(user.id)"
-        >
+      <div v-for="user in userPlaylist" :key="user.id"
+        class="relative flex justify-between items-center mt-2 hover:bg-slate-700 rounded-lg">
+        <button class="text-start flex-grow flex items-center" @click="getMyplayList(user.id)">
           <div v-if="user.images && user.images[0] && user.images[0].url">
-            <img
-              :src="user.images[0].url"
-              alt="Image"
-              width="70"
-              height="70"
-              class="p-2 object-cover rounded-lg"
-            />
+            <img :src="user.images[0].url" alt="Image" width="70" height="70" class="p-2 object-cover rounded-lg" />
           </div>
           <div v-else>
-            <img
-              src="../assets/note.svg"
-              alt="Image"
-              width="70"
-              height="70"
-              class="p-2 filter brightness-0 invert"
-            />
+            <img src="../assets/note.svg" alt="Image" width="70" height="70" class="p-2 filter brightness-0 invert" />
           </div>
 
           <div class="p-4">
@@ -218,30 +183,17 @@ const login = () => {
         </button>
 
         <button class="p-4" @click="toggleDropdown(user.id)">
-          <img
-            alt="Vue logo"
-            class="logo cursor-pointer filter brightness-4 invert"
-            src="../assets/options.svg"
-            width="23"
-            height="23"
-          />
+          <img alt="Vue logo" class="logo cursor-pointer filter brightness-4 invert" src="../assets/options.svg"
+            width="23" height="23" />
         </button>
 
         <!-- Dropdown menu -->
-        <div
-          v-if="showDropdown === user.id"
-          class="absolute right-0 top-full mt-2 w-32 bg-white text-black shadow-lg rounded-lg z-10"
-        >
-          <button
-            class="block w-full px-4 py-2 hover:bg-gray-200 text-left rounded-lg"
-            @click="toggleEdit(user.id)"
-          >
+        <div v-if="showDropdown === user.id"
+          class="absolute right-0 top-full mt-2 w-32 bg-white text-black shadow-lg rounded-lg z-10">
+          <button class="block w-full px-4 py-2 hover:bg-gray-200 text-left rounded-lg" @click="toggleEdit(user.id)">
             Edit
           </button>
-          <button
-            class="block w-full px-4 py-2 hover:bg-gray-200 text-left rounded-lg"
-            @click="deleteUser(user.id)"
-          >
+          <button class="block w-full px-4 py-2 hover:bg-gray-200 text-left rounded-lg" @click="deleteUser(user.id)">
             Delete
           </button>
         </div>
@@ -253,18 +205,14 @@ const login = () => {
     <Album :albums="albums" />
   </div>
 
-  <div v-else class="ml-64">
+
+  <div v-if="toggleCreateMysong == true" class="ml-64">
     <PlayList :tracks="tracks" />
   </div>
 
   <teleport to="body">
-    <DeleteModal
-      v-if="showDelete"
-      message="Are you sure you want to delete this playlist?"
-      @confirm="handleDelete"
-      @cancel="showDelete = false"
-      :playlistId="selectedPlaylistId"
-    />
+    <DeleteModal v-if="showDelete" message="Are you sure you want to delete this playlist?" @confirm="handleDelete"
+      @cancel="showDelete = false" :playlistId="selectedPlaylistId" />
   </teleport>
   <RouterView />
 </template>
