@@ -1,3 +1,5 @@
+import { useRouter } from 'vue-router'
+
 export async function redirectToAuthCodeFlow(clientId) {
   const verifier = generateCodeVerifier(128)
   const challenge = await generateCodeChallenge(verifier)
@@ -6,7 +8,7 @@ export async function redirectToAuthCodeFlow(clientId) {
   const params = new URLSearchParams()
   params.append('client_id', clientId)
   params.append('response_type', 'code')
-  params.append('redirect_uri', 'http://localhost:5173/callback')
+  params.append('redirect_uri', 'http://localhost:5173/music')
   params.append(
     'scope',
     'user-read-private user-read-email playlist-modify-public playlist-modify-private playlist-read-private'
@@ -14,6 +16,7 @@ export async function redirectToAuthCodeFlow(clientId) {
   params.append('code_challenge_method', 'S256')
   params.append('code_challenge', challenge)
 
+  localStorage.setItem('code', challenge)
   document.location = `https://accounts.spotify.com/authorize?${params.toString()}`
 }
 
@@ -36,23 +39,33 @@ async function generateCodeChallenge(codeVerifier) {
     .replace(/=+$/, '')
 }
 
-export async function getAccessToken(clientId, code) {
+export async function getAccessToken(clientId) {
+  const router = useRouter()
+  const params = new URLSearchParams(window.location.search)
+  const code = params.get('code')
+
+  if (!code) {
+    console.error('No authorization code found in the URL')
+    return
+  }
   const verifier = localStorage.getItem('verifier')
-  const params = new URLSearchParams()
-  params.append('client_id', clientId)
-  params.append('grant_type', 'authorization_code')
-  params.append('code', code)
-  params.append('redirect_uri', 'http://localhost:5173/callback')
-  params.append('code_verifier', verifier)
+  const tokenParams = new URLSearchParams()
+  tokenParams.append('client_id', clientId)
+  tokenParams.append('grant_type', 'authorization_code')
+  tokenParams.append('code', code)
+  tokenParams.append('redirect_uri', 'http://localhost:5173/music')
+  tokenParams.append('code_verifier', verifier)
 
   const result = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: params
+    body: tokenParams
   })
 
   const { access_token } = await result.json()
+
   localStorage.setItem('access_token', access_token)
+  router.push({ path: '/music' })
 
   return access_token
 }
@@ -64,12 +77,11 @@ export async function fetchProfile(token) {
   })
   if (result.status === 401) {
     localStorage.clear()
-    window.location.href = 'http://localhost:5173'
+    window.location.href = 'http://localhost:5173/music'
   }
   return await result.json()
 }
 
-// ดึง access_token จาก localStorage และใช้ในการดึงโปรไฟล์
 export async function fetchProfileFromStorage() {
   const token = localStorage.getItem('access_token')
   if (token) {

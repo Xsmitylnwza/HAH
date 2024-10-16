@@ -5,8 +5,8 @@ import MusicApp from './components/MusicApp.vue'
 
 <template>
   <div>
-    <MusicApp />
-    <!-- <RouterView />m -->
+    <!-- <MusicApp /> -->
+    <RouterView />
   </div>
 </template>
 

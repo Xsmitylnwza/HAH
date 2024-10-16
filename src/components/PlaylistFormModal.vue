@@ -2,24 +2,12 @@
 import { usePlaylistStore } from '../stores/playlist'
 import { ref, onMounted } from 'vue'
 import { fetchProfileFromStorage } from '../stores/login'
+import { useRouter, useRoute } from 'vue-router'
 
+const route = useRoute()
+const router = useRouter()
 const playlistStore = usePlaylistStore()
 const user_id = ref('')
-
-const props = defineProps({
-  mode: {
-    type: String,
-    required: true
-  },
-  playlist: {
-    type: Array, // รับ playlist เป็น array
-    required: false
-  },
-  playlistId: {
-    type: String, // The specific playlist ID to edit
-    required: false
-  }
-})
 
 const token = localStorage.getItem('access_token')
 
@@ -27,6 +15,8 @@ const token = localStorage.getItem('access_token')
 const newPlaylistName = ref('')
 const playlistDescription = ref('')
 const playlistsPublic = ref(false)
+const playlist = ref([])
+const mode = route.name === 'create' ? 'create' : 'edit'
 
 const newPlayList = ref({
   name: '',
@@ -40,10 +30,10 @@ onMounted(async () => {
   if (profile) {
     user_id.value = profile.id
   }
-
-  if (props.mode === 'edit' && props.playlist.length > 0) {
-    const selectedPlaylist = props.playlist.find(
-      (p) => p.id === props.playlistId
+  playlist.value = await playlistStore.getUserPlaylist(user_id.value, token)
+  if (mode === 'edit' && playlist.value.length > 0) {
+    const selectedPlaylist = playlist.value.find(
+      (p) => p.id === route.params.id
     )
     if (selectedPlaylist) {
       newPlaylistName.value = selectedPlaylist.name
@@ -61,8 +51,8 @@ const createOrEditPlaylist = () => {
       public: playlistsPublic.value
     }
 
-    if (props.mode === 'edit') {
-      playlistStore.updatePlaylist(token, props.playlistId, newPlayList.value)
+    if (mode === 'edit') {
+      playlistStore.updatePlaylist(token, route.params.id, newPlayList.value)
     } else {
       playlistStore.createPlaylist(token, user_id.value, newPlayList.value)
     }
@@ -77,6 +67,7 @@ const createOrEditPlaylist = () => {
 
 const closeModal = () => {
   emit('close')
+  router.push({ name: 'music' })
 }
 
 const emit = defineEmits(['create', 'close'])

@@ -2,7 +2,9 @@
 import { ref } from 'vue'
 import { useUserStore } from '../stores/user'
 import { redirectToAuthCodeFlow } from '../stores/login'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const props = defineProps(['code'])
 
 const userStore = useUserStore()
@@ -12,12 +14,15 @@ const clientId = ref('')
 
 const login = async () => {
   await userStore.login(username.value, password.value)
-  clientId.value = userStore.getUser
+  clientId.value = userStore.getClientId
   if (clientId.value) {
     redirectToAuthCodeFlow(clientId.value)
-
     $emit('login')
   }
+}
+
+const close = () => {
+  router.push({ name: 'music' })
 }
 </script>
 
@@ -31,7 +36,7 @@ const login = async () => {
       <h2 class="text-2xl font-semibold mb-4 text-white text-center">
         Login
         <button
-          @click="$emit('close')"
+          @click="close"
           class="absolute top-4 right-4 bg-gray-600 text-white p-1 rounded hover:bg-gray-500"
         >
           <img
@@ -65,7 +70,6 @@ const login = async () => {
       </div>
 
       <div class="flex flex-col items-center mt-8">
-        <!-- เพิ่ม margin-top ที่นี่ -->
         <button
           @click="login"
           class="bg-gradient-to-r from-blue-500 to-blue-700 text-white text-lg px-4 py-2 rounded hover:bg-blue-800 mb-4 w-full"

@@ -3,17 +3,14 @@
     {
       "username": "ccbluecc",
       "password": "123456",
-      "clientId": "904da645d0e64016ab25cbfc9ce444a4"
-    },
-    {
-      "username": "jane_smith",
-      "password": "securePassword",
-      "clientId": "anotherClientId"
+      "clientId": "904da645d0e64016ab25cbfc9ce444a4",
+      "clientSecret": "29fc6f15441b451f91885b1b423e5230"
     },
     {
       "username": "praewa",
       "password": "123456",
-      "clientId": "33582544dfb6432faed014f9b1c26e67"
+      "clientId": "33582544dfb6432faed014f9b1c26e67",
+      "clientSecret": "29fc6f15441b451f91885b1b423e5230"
     }
   ]
 }

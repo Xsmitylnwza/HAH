@@ -1,38 +1,36 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import Header from './Header.vue'
-import LoginModal from './LoginModal.vue'
 import Album from './Album.vue'
 import { usePlaylistStore } from '../stores/playlist'
 import { useAlbumStore } from '../stores/album'
 import { fetchProfileFromStorage, getAccessToken } from '../stores/login'
 import PlayList from './PlayList.vue'
-import PlaylistFormModal from './PlaylistFormModal.vue'
 import DeleteModal from './DeleteModal.vue'
+import { useUserStore } from '../stores/user'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const albumStore = useAlbumStore()
 const playlistStore = usePlaylistStore()
-const clientId = '33582544dfb6432faed014f9b1c26e67'
-const clientSecret = 'a2c9aa3cbf4c46759fa31a922968d913'
+const userStore = useUserStore()
+const clientId = '904da645d0e64016ab25cbfc9ce444a4'
+const clientSecret = '29fc6f15441b451f91885b1b423e5230'
 const accessToken = ref('')
 const searchInput = ref('')
 const albums = ref([])
 const tracks = ref([])
-const showModal = ref(false)
-const showCreatePlaylistModal = ref(false)
 const isLoggedIn = ref(false)
 const username = ref('')
 const user_id = ref('')
 const token = ref('')
 const userPlaylist = ref({})
 const showDropdown = ref('')
-const mode = ref('')
 const selectedPlaylistId = ref('')
 const showDelete = ref(false)
 
 onMounted(async () => {
-  const urlParams = new URLSearchParams(window.location.search)
-  const code = urlParams.get('code')
+  const code = localStorage.getItem('code')
   let localAccessToken = localStorage.getItem('access_token')
   if (localAccessToken) {
     token.value = localAccessToken
@@ -51,6 +49,7 @@ onMounted(async () => {
     )
   }
 
+  userStore.setUser()
   await playlistStore.setAccessToken(clientId, clientSecret)
   accessToken.value = playlistStore.getAccessToken
   await playlistStore.getTrackByPlaylist(
@@ -95,8 +94,7 @@ const handleDelete = async () => {
 }
 
 const toggleCreate = () => {
-  mode.value = 'create'
-  showCreatePlaylistModal.value = true
+  router.push({ name: 'create' })
 }
 
 const toggleDropdown = (userId) => {
@@ -104,9 +102,7 @@ const toggleDropdown = (userId) => {
 }
 
 const toggleEdit = async (playlistsId) => {
-  mode.value = 'edit'
-  showCreatePlaylistModal.value = true
-  selectedPlaylistId.value = playlistsId
+  router.push({ name: 'edit', params: { id: playlistsId } })
 }
 
 const deleteUser = (playlistsId) => {
@@ -114,6 +110,10 @@ const deleteUser = (playlistsId) => {
 
   selectedPlaylistId.value = playlistsId
   showDelete.value = true
+}
+
+const login = () => {
+  router.push({ name: 'login' })
 }
 </script>
 
@@ -144,7 +144,7 @@ const deleteUser = (playlistsId) => {
         <div class="flex items-center space-x-2">
           <button
             v-if="!isLoggedIn"
-            @click="showModal = true"
+            @click="login"
             class="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold px-6 py-3 rounded-full hover:bg-blue-800 transition duration-300"
           >
             Login
@@ -258,25 +258,6 @@ const deleteUser = (playlistsId) => {
   </div>
 
   <teleport to="body">
-    <LoginModal
-      v-if="showModal"
-      @close="showModal = false"
-      @login="isLoggedIn = true"
-    />
-  </teleport>
-
-  <teleport to="body">
-    <PlaylistFormModal
-      v-if="showCreatePlaylistModal"
-      @create="createOrEditPlaylist"
-      @close="showCreatePlaylistModal = false"
-      :mode="mode"
-      :playlist="userPlaylist"
-      :playlistId="selectedPlaylistId"
-    />
-  </teleport>
-
-  <teleport to="body">
     <DeleteModal
       v-if="showDelete"
       message="Are you sure you want to delete this playlist?"
@@ -285,6 +266,7 @@ const deleteUser = (playlistsId) => {
       :playlistId="selectedPlaylistId"
     />
   </teleport>
+  <RouterView />
 </template>
 
 <style scoped></style>
