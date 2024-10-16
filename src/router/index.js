@@ -1,7 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import LoginModal from '../components/LoginModal.vue'
-import MusicApp from '../components/MusicApp.vue'
-import PlaylistFormModal from '../components/PlaylistFormModal.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import LoginModal from '../components/LoginModal.vue';
+import MusicApp from '../components/MusicApp.vue';
+import PlaylistFormModal from '../components/PlaylistFormModal.vue';
+import createMySong from '../components/createMySong.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ const router = createRouter({
           component: PlaylistFormModal
         },
         {
+          path: 'AddSong', 
+          name: 'AddSong',
+          component: createMySong,
+        },
+        {
           path: 'edit/:id',
           name: 'edit',
           component: PlaylistFormModal
@@ -33,6 +39,6 @@ const router = createRouter({
       ]
     }
   ]
-})
+});
 
-export default router
+export default router;
