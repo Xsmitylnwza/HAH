@@ -60,17 +60,13 @@ const createOrEditPlaylist = () => {
     newPlaylistName.value = ''
     playlistDescription.value = ''
     playlistsPublic.value = false
-    emit('create')
     closeModal()
   }
 }
 
-const closeModal = () => {
-  emit('close')
+const closeModal = async () => {
   router.push({ name: 'music' })
 }
-
-const emit = defineEmits(['create', 'close'])
 </script>
 
 <template>

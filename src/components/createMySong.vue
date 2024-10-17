@@ -7,12 +7,10 @@ import { fetchProfileFromStorage } from '../stores/login'
 const router = useRouter()
 const user_id = ref('')
 
-// Music fields
 const musicFile = ref(null)
 const musicDescription = ref('')
 const singerName = ref('')
 
-// Fetch user ID
 onMounted(async () => {
   const profile = await fetchProfileFromStorage()
   if (profile) {
@@ -20,7 +18,6 @@ onMounted(async () => {
   }
 })
 
-// Submit form to add song
 const createSong = async () => {
   if (musicFile.value && singerName.value) {
     const formData = new FormData()
@@ -47,16 +44,10 @@ const clearForm = () => {
   singerName.value = ''
 }
 
-// Close modal and navigate back to music page
 const closeModal = () => {
-  emit('close') // Emit close event
-  router.push({ name: 'music' }) // Navigate to music page
+  router.push({ name: 'mysong' })
 }
 
-// Define emits
-const emit = defineEmits(['close'])
-
-// Handling file selection using ref instead of event
 const handleFileSelect = (files) => {
   if (files && files.length > 0) {
     musicFile.value = files[0]
@@ -71,7 +62,6 @@ const handleFileSelect = (files) => {
     <div class="bg-white text-black p-6 rounded-lg shadow-lg w-96">
       <h2 class="text-xl font-bold mb-4">Add New Song</h2>
 
-      <!-- Input for file upload -->
       <input
         ref="musicFile"
         type="file"
@@ -88,7 +78,6 @@ const handleFileSelect = (files) => {
         placeholder="Singer Name"
       />
 
-      <!-- Input for music description -->
       <input
         v-model="musicDescription"
         type="text"
