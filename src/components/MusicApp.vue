@@ -7,14 +7,12 @@ import { useAlbumStore } from '../stores/album'
 import { fetchProfileFromStorage, getAccessToken } from '../stores/login'
 import PlayList from './PlayList.vue'
 import DeleteModal from './DeleteModal.vue'
-import { useUserStore } from '../stores/user'
 import { useRouter } from 'vue-router'
 import defaultProfileImage from '../assets/profile.jpeg'
 
 const router = useRouter()
 const albumStore = useAlbumStore()
 const playlistStore = usePlaylistStore()
-const userStore = useUserStore()
 const accessToken = ref('')
 const searchInput = ref('')
 const albums = ref([])
@@ -28,28 +26,24 @@ const showDropdown = ref('')
 const selectedPlaylistId = ref('')
 const showDelete = ref(false)
 const profileImage = ref('')
-const clientId = ref('904da645d0e64016ab25cbfc9ce444a4')
-const clientSecret = ref('29fc6f15441b451f91885b1b423e5230')
 
 onMounted(async () => {
+  //Login
   const code = localStorage.getItem('code')
   let localAccessToken = localStorage.getItem('access_token')
 
   if (localAccessToken) {
     token.value = localAccessToken
   } else if (code) {
-    token.value = await getAccessToken(clientId.value, code)
+    token.value = await getAccessToken()
     isLoggedIn.value = true
   }
-
   if (code) isLoggedIn.value = true
-
   const profile = await fetchProfileFromStorage()
   if (profile) {
     if (profile.images.length > 0) {
       profileImage.value = profile.images[0].url
     }
-
     username.value = profile.display_name
     user_id.value = profile.id
     userPlaylist.value = await playlistStore.getUserPlaylist(
@@ -58,14 +52,10 @@ onMounted(async () => {
     )
   }
 
-  await userStore.setUser()
-  if (userStore.clientId && userStore.clientSecret) {
-    clientId.value = userStore.clientId
-    clientSecret.value = userStore.clientSecret
-  }
-  console.log(clientId.value, clientSecret.value)
-
-  await playlistStore.setAccessToken(clientId.value, clientSecret.value)
+  //No Login
+  const defaultClientId = '904da645d0e64016ab25cbfc9ce444a4'
+  const defaultClientSecret = '29fc6f15441b451f91885b1b423e5230'
+  await playlistStore.setAccessToken(defaultClientId, defaultClientSecret)
   accessToken.value = playlistStore.getAccessTokens()
   await playlistStore.getTrackByPlaylist(
     accessToken.value,

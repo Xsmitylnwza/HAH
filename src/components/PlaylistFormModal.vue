@@ -54,7 +54,7 @@ const createOrEditPlaylist = () => {
     if (mode === 'edit') {
       playlistStore.updatePlaylist(token, route.params.id, newPlayList.value)
     } else {
-      playlistStore.createPlaylist(token, user_id.value, newPlayList.value)
+      playlistStore.createNewPlaylist(token, user_id.value, newPlayList.value)
     }
 
     newPlaylistName.value = ''
