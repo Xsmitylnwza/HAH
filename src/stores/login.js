@@ -4,6 +4,7 @@ export async function redirectToAuthCodeFlow(clientId) {
   const verifier = generateCodeVerifier(128)
   const challenge = await generateCodeChallenge(verifier)
   localStorage.setItem('verifier', verifier)
+  localStorage.setItem('clientid', clientId)
 
   const params = new URLSearchParams()
   params.append('client_id', clientId)
@@ -39,11 +40,11 @@ async function generateCodeChallenge(codeVerifier) {
     .replace(/=+$/, '')
 }
 
-export async function getAccessToken(clientId) {
+export async function getAccessToken() {
   const router = useRouter()
   const params = new URLSearchParams(window.location.search)
   const code = params.get('code')
-
+  const clientId = localStorage.getItem('clientid')
   if (!code) {
     console.error('No authorization code found in the URL')
     return

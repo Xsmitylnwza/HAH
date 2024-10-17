@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import Header from './Header.vue'
 import Album from './Album.vue'
 import { usePlaylistStore } from '../stores/playlist'
@@ -7,15 +7,12 @@ import { useAlbumStore } from '../stores/album'
 import { fetchProfileFromStorage, getAccessToken } from '../stores/login'
 import PlayList from './PlayList.vue'
 import DeleteModal from './DeleteModal.vue'
-import { useUserStore } from '../stores/user'
 import { useRouter } from 'vue-router'
+import defaultProfileImage from '../assets/profile.jpeg'
 
 const router = useRouter()
 const albumStore = useAlbumStore()
 const playlistStore = usePlaylistStore()
-const userStore = useUserStore()
-const clientId = '904da645d0e64016ab25cbfc9ce444a4'
-const clientSecret = '29fc6f15441b451f91885b1b423e5230'
 const accessToken = ref('')
 const searchInput = ref('')
 const albums = ref([])
@@ -28,19 +25,25 @@ const userPlaylist = ref({})
 const showDropdown = ref('')
 const selectedPlaylistId = ref('')
 const showDelete = ref(false)
+const profileImage = ref('')
 
 onMounted(async () => {
+  //Login
   const code = localStorage.getItem('code')
   let localAccessToken = localStorage.getItem('access_token')
+
   if (localAccessToken) {
     token.value = localAccessToken
   } else if (code) {
-    token.value = await getAccessToken(clientId, code)
+    token.value = await getAccessToken()
     isLoggedIn.value = true
   }
   if (code) isLoggedIn.value = true
   const profile = await fetchProfileFromStorage()
   if (profile) {
+    if (profile.images.length > 0) {
+      profileImage.value = profile.images[0].url
+    }
     username.value = profile.display_name
     user_id.value = profile.id
     userPlaylist.value = await playlistStore.getUserPlaylist(
@@ -49,15 +52,21 @@ onMounted(async () => {
     )
   }
 
-  userStore.setUser()
-  await playlistStore.setAccessToken(clientId, clientSecret)
-  accessToken.value = playlistStore.getAccessToken
+  //No Login
+  const defaultClientId = '904da645d0e64016ab25cbfc9ce444a4'
+  const defaultClientSecret = '29fc6f15441b451f91885b1b423e5230'
+  await playlistStore.setAccessToken(defaultClientId, defaultClientSecret)
+  accessToken.value = playlistStore.getAccessTokens()
   await playlistStore.getTrackByPlaylist(
     accessToken.value,
     '37i9dQZF1DX812gZSD3Ky1'
   )
-  tracks.value = playlistStore.getTracks
+
+  tracks.value = playlistStore.getTracks()
 })
+const toggleCreate = () => {
+  router.push({ name: 'create' })
+}
 
 const search = async () => {
   if (searchInput.value.trim()) {
@@ -65,8 +74,9 @@ const search = async () => {
       accessToken.value,
       searchInput.value
     )
+
     await albumStore.setAlbums(accessToken.value, artist)
-    albums.value = albumStore.getAlbums
+    albums.value = albumStore.getAlbums()
   }
 }
 
@@ -78,23 +88,12 @@ const getMyplayList = async (playlistsId) => {
   tracks.value = track
 }
 
-const createOrEditPlaylist = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 100))
-  userPlaylist.value = await playlistStore.getUserPlaylist(
-    user_id.value,
-    token.value
-  )
-}
 const handleDelete = async () => {
   userPlaylist.value = await playlistStore.getUserPlaylist(
     user_id.value,
     token.value
   )
   showDelete.value = false
-}
-
-const toggleCreate = () => {
-  router.push({ name: 'create' })
 }
 
 const toggleDropdown = (userId) => {
@@ -106,8 +105,6 @@ const toggleEdit = async (playlistsId) => {
 }
 
 const deleteUser = (playlistsId) => {
-  console.log(showDelete.value)
-
   selectedPlaylistId.value = playlistsId
   showDelete.value = true
 }
@@ -115,6 +112,30 @@ const deleteUser = (playlistsId) => {
 const login = () => {
   router.push({ name: 'login' })
 }
+
+const logout = () => {
+  localStorage.removeItem('access_token')
+  localStorage.removeItem('code')
+  localStorage.removeItem('verifier')
+  isLoggedIn.value = false
+  username.value = ''
+  user_id.value = ''
+  token.value = ''
+  router.push({ name: 'login' })
+}
+
+watch(
+  () => router.currentRoute.value.path,
+  async (newPath, oldPath) => {
+    if (newPath !== oldPath) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      userPlaylist.value = await playlistStore.getUserPlaylist(
+        user_id.value,
+        token.value
+      )
+    }
+  }
+)
 </script>
 
 <template>
@@ -149,16 +170,23 @@ const login = () => {
           >
             Login
           </button>
-          <div
-            v-else
-            class="flex items-center space-x-2 border-2 rounded-full pl-4"
-          >
-            <span class="text-white"> {{ username }}</span>
+
+          <div class="flex items-center space-x-2" v-if="isLoggedIn">
             <img
-              src="../assets/profile.jpeg"
-              alt="Profile Picture"
-              class="w-12 h-12 rounded-full"
+              @click="logout"
+              alt="logout"
+              src="../assets/logout.svg"
+              class="w-6 h-6 cursor-pointer filter brightness-0 invert"
             />
+
+            <div class="flex items-center space-x-2 border-2 rounded-full pl-4">
+              <span class="text-white">{{ username }}</span>
+              <img
+                :src="profileImage || defaultProfileImage"
+                alt="Profile Picture"
+                class="w-12 h-12 rounded-full"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -183,6 +211,14 @@ const login = () => {
         />
       </button>
     </div>
+
+    <button
+      class="text-center bg-white text-purple-600 font-bold px-6 py-3 rounded-full shadow-lg hover:bg-purple-600 hover:text-white transition duration-300 ease-in-out mb-6"
+      @click="router.push({ name: 'mysong' })"
+    >
+      My Song
+    </button>
+
     <div class="mt-4">
       <div
         v-for="user in userPlaylist"

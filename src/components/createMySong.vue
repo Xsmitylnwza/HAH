@@ -1,97 +1,106 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { addItem } from '../lib/fetchUtils'
+import { fetchProfileFromStorage } from '../stores/login'
 
-const showModal = ref(false)
-const songFile = ref(null)
+const router = useRouter()
+const user_id = ref('')
+
+const musicFile = ref(null)
 const musicDescription = ref('')
 const singerName = ref('')
-const songName = ref('')
 
-// Function to handle file upload
-const handleFileUpload = (event) => {
-  songFile.value = event.target.files[0]
+onMounted(async () => {
+  const profile = await fetchProfileFromStorage()
+  if (profile) {
+    user_id.value = profile.id
+  }
+})
+
+const createSong = async () => {
+  if (musicFile.value && singerName.value) {
+    const formData = new FormData()
+    formData.append('file', musicFile.value)
+    formData.append('description', musicDescription.value)
+    formData.append('singer', singerName.value)
+
+    try {
+      await addItem(user_id.value, formData)
+      clearForm()
+      closeModal()
+    } catch (error) {
+      console.error('Error adding song:', error)
+    }
+  } else {
+    alert('Please provide a music file and singer name.')
+  }
 }
 
-// Function to add a song
-const addSong = async () => {
-  const newItem = {
-    songName: songName.value,
-    description: musicDescription.value,
-    singer: singerName.value,
-    file: songFile.value ? songFile.value.name : '', // Send file name if exists
-  }
-
-  try {
-    const addedItem = await addItem('/api/add-song', newItem) // Call API to add song
-    console.log('Added song:', addedItem)
-    // Close modal after successfully adding song
-    showModal.value = false
-  } catch (error) {
-    console.error('Error adding song:', error)
-  }
+// Clear form inputs
+const clearForm = () => {
+  musicFile.value = null
+  musicDescription.value = ''
+  singerName.value = ''
 }
 
-// Fetch function to add a song to backend
-async function addItem(url, newItem) {
-  try {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(newItem),
-    })
-    const addedItem = await res.json()
-    return addedItem
-  } catch (error) {
-    console.error(`error: ${error}`)
-    throw new Error(error)
+const closeModal = () => {
+  router.push({ name: 'mysong' })
+}
+
+const handleFileSelect = (files) => {
+  if (files && files.length > 0) {
+    musicFile.value = files[0]
   }
 }
 </script>
 
 <template>
-  <div>
-    <!-- Button to open modal -->
-    <button @click="showModal = true" class="block text-white text-lg font-semibold bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 text-center">
-      Add Song
-    </button>
+  <div
+    class="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50"
+  >
+    <div class="bg-white text-black p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-xl font-bold mb-4">Add New Song</h2>
 
-    <!-- Modal for adding a song -->
-    <div v-if="showModal" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-      <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-        <h2 class="text-2xl font-semibold mb-4">Create My Song</h2>
+      <input
+        ref="musicFile"
+        type="file"
+        accept="audio/*"
+        class="w-full p-2 mb-4 border border-gray-300 rounded"
+        @change="handleFileSelect($event.target.files)"
+      />
 
-        <!-- File upload field -->
-        <div class="mb-4">
-          <label class="block font-semibold mb-1">Upload Song</label>
-          <input type="file" accept="audio/*" @change="handleFileUpload" class="border rounded-lg px-3 py-2 w-full" />
-        </div>
+      <!-- Input for singer name -->
+      <input
+        v-model="singerName"
+        type="text"
+        class="w-full p-2 mb-4 border border-gray-300 rounded"
+        placeholder="Singer Name"
+      />
 
-        <!-- Song name input -->
-        <div class="mb-4">
-          <label class="block font-semibold mb-1">Song Name</label>
-          <input v-model="songName" type="text" placeholder="Enter song name" class="border rounded-lg px-3 py-2 w-full" />
-        </div>
+      <input
+        v-model="musicDescription"
+        type="text"
+        class="w-full p-2 mb-4 border border-gray-300 rounded"
+        placeholder="Music Description"
+      />
 
-        <!-- Singer name input -->
-        <div class="mb-4">
-          <label class="block font-semibold mb-1">Singer Name</label>
-          <input v-model="singerName" type="text" placeholder="Enter singer name" class="border rounded-lg px-3 py-2 w-full" />
-        </div>
-
-        <!-- Music description input -->
-        <div class="mb-4">
-          <label class="block font-semibold mb-1">Music Description</label>
-          <textarea v-model="musicDescription" placeholder="Enter music description" class="border rounded-lg px-3 py-2 w-full"></textarea>
-        </div>
-
-        <!-- Add and Cancel buttons -->
-        <div class="flex justify-end space-x-2">
-          <button @click="showModal = false" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Cancel</button>
-          <button @click="addSong" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Add</button>
-        </div>
+      <div class="flex justify-end">
+        <button
+          @click="createSong"
+          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Add
+        </button>
+        <button
+          @click="closeModal"
+          class="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+        >
+          Cancel
+        </button>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped></style>

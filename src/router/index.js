@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginModal from '../components/LoginModal.vue'
 import MusicApp from '../components/MusicApp.vue'
 import PlaylistFormModal from '../components/PlaylistFormModal.vue'
+import createMySong from '../components/createMySong.vue'
+import MySong from '../components/MySong.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,6 +31,18 @@ const router = createRouter({
           path: 'edit/:id',
           name: 'edit',
           component: PlaylistFormModal
+        }
+      ]
+    },
+    {
+      path: '/mysong',
+      name: 'mysong',
+      component: MySong,
+      children: [
+        {
+          path: '/mysong/add',
+          name: 'AddSong',
+          component: createMySong
         }
       ]
     }

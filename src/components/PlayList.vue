@@ -12,42 +12,38 @@ let accessToken = localStorage.getItem('access_token')
 
 const previewUrl = ref('')
 const currentTrack = ref(null)
-const currentTime = ref(0);
-const audioDuration = ref(0);
-const isPlaying = ref(false);
+const currentTime = ref(0)
+const audioDuration = ref(0)
+const isPlaying = ref(false)
 
 const click = async (track) => {
   try {
-    const tracks = await playlistStore.getTrack(accessToken, track.id);
+    const tracks = await playlistStore.getTrackById(accessToken, track.id)
     if (tracks && tracks.length > 0) {
-      const firstTrack = tracks[0]; 
+      const firstTrack = tracks[0]
 
       if (firstTrack.preview_url) {
-        previewUrl.value = firstTrack.preview_url;
-        currentTrack.value = track; 
+        previewUrl.value = firstTrack.preview_url
+        currentTrack.value = track
       } else {
-        resetPlayer();
+        resetPlayer()
       }
     } else {
-      resetPlayer(); 
+      resetPlayer()
     }
   } catch (error) {
-    console.error('Error fetching track:', error);
-    resetPlayer(); 
+    console.error('Error fetching track:', error)
+    resetPlayer()
   }
-};
-
+}
 
 const resetPlayer = () => {
-  previewUrl.value = null;
-  currentTrack.value = null;
-  currentTime.value = 0;
-  audioDuration.value = 0;
-  isPlaying.value = false;
-};
-
-
-
+  previewUrl.value = null
+  currentTrack.value = null
+  currentTime.value = 0
+  audioDuration.value = 0
+  isPlaying.value = false
+}
 </script>
 
 <template>
@@ -81,9 +77,11 @@ const resetPlayer = () => {
     <p class="text-center text-gray-500">No playlists found.</p>
   </div>
 
-  <MusicPlayer v-if="currentTrack" :previewUrl="previewUrl" :currentTrack="currentTrack" />
+  <MusicPlayer
+    v-if="currentTrack"
+    :previewUrl="previewUrl"
+    :currentTrack="currentTrack"
+  />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
