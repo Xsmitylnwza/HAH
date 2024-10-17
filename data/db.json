@@ -13,12 +13,57 @@
     {
       "username": "ikkeweww",
       "password": "123456",
-      "clientId": "4728188e9b44412682442a7f74f7cce3"
+      "clientId": "4728188e9b44412682442a7f74f7cce3",
     },
     {
       "username": "blue",
       "password": "123456",
       "clientId": "be7d25e4375347d79b83d4cb3be2ffdc"
+    }
+  ],
+  "songs": [
+    {
+      "id": "5917",
+      "File": "musicFile.value",
+      "Singer": "aa",
+      "description": "aa"
+    },
+    {
+      "id": "a662",
+      "File": "musicFile.value",
+      "Singer": "aa",
+      "description": "aa"
+    },
+    {
+      "id": "ed90",
+      "File": "musicFile.value",
+      "Singer": "aa",
+      "description": "aa"
+    },
+    {
+      "id": "1f92",
+      "File": {},
+      "Singer": "asa",
+      "description": "ax"
+    },
+    {
+      "id": "23b0",
+      "File": {},
+      "Singer": "asa",
+      "description": "ax"
+    },
+    {
+      "id": "13c2",
+      "File": {},
+      "Singer": "asa",
+      "description": "ax"
+    },
+    {
+      "id": "26c6",
+      "File": {},
+      "Singer": "sasa",
+      "description": "ssd"
+
     }
   ]
 }
