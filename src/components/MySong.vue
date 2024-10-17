@@ -32,7 +32,24 @@ const login = () => {
     <template #icon></template>
     <template #default>
       <div class="flex justify-between items-center w-full">
-        <div class="flex justify-end items-center w-[30%]"></div>
+        <div class="flex justify-end items-center w-[30%]">
+          <div class="relative w-full">
+            <input
+              type="text"
+              v-model="searchInput"
+              placeholder="Search for an music"
+              class="w-full pl-10 pr-4 py-4 rounded-3xl border border-gray-300 text-lg shadow-md focus:outline-none"
+              @input="search"
+            />
+            <img
+              alt="Search icon"
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 filter brightness-0 invert"
+              src="../assets/search.svg"
+              width="20"
+              height="20"
+            />
+          </div>
+        </div>
 
         <div class="flex items-center space-x-2">
           <button

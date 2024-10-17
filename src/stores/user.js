@@ -28,7 +28,9 @@ export const useUserStore = defineStore('user', () => {
   const loginUser = async (username, password) => {
     try {
       const response = await login(username, password)
+      user.value = response
       clientId.value = response.clientId
+      clientSecret.value = response.clientSecret
       return response.clientId
     } catch (e) {
       console.error(e)

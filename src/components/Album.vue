@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { usePlaylistStore } from '../stores/playlist'
-import TrackList from './TrackList.vue' // Import TrackList component
+import TrackList from './TrackList.vue'
 
 const props = defineProps({
   albums: Array
@@ -15,7 +15,7 @@ const tracks = ref([])
 
 const click = async (album) => {
   selectedAlbum.value = album
-  const trackData = await playlistStore.getTrack(accessToken, album.id)
+  const trackData = await playlistStore.getTrackById(accessToken, album.id)
   tracks.value = trackData
 }
 const goBack = () => {
