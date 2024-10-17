@@ -1,38 +1,22 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { addItem } from '../lib/fetchUtils'
-// import { mysongStore } from '@/stores/Mysong'
+import { useSongStore } from '../stores/song'
 import { fetchProfileFromStorage } from '../stores/login'
 
 const router = useRouter()
+const songStore = useSongStore()
 const user_id = ref('')
 
+// ลดฟิลด์ใน newSong ให้เหลือเฉพาะที่ต้องการ
+const newSong = ref({
+  albumCover: null, // เพิ่มฟิลด์สำหรับรูปปกเพลง
+  artist: '',
+  musicName: '',
+  musicDescription: '',
+  musicFile: null
+})
 
-
-const url = 'http://localhost:5174'
-
-
-const musicFile = ref(null)
-const musicDescription = ref('')
-const singerName = ref('')
-
-
-
-const addSong = async () => {
-    const songData = {
-        File: musicFile.value,
-        Singer: singerName.value,
-        description: musicDescription.value
-    };
-
-    await addItem('http://localhost:5001/songs', songData)
-
-}
-
-// Handling file selection using ref instead of event
-const handleFileSelect = (files) => {
-    musicFile.value = files
 onMounted(async () => {
   const profile = await fetchProfileFromStorage()
   if (profile) {
@@ -41,77 +25,27 @@ onMounted(async () => {
 })
 
 const createSong = async () => {
-  if (musicFile.value && singerName.value) {
-    const formData = new FormData()
-    formData.append('file', musicFile.value)
-    formData.append('description', musicDescription.value)
-    formData.append('singer', singerName.value)
-
-    try {
-      await addItem(user_id.value, formData)
-      clearForm()
-      closeModal()
-    } catch (error) {
-      console.error('Error adding song:', error)
-    }
-  } else {
-    alert('Please provide a music file and singer name.')
-  }
-}
-
-// Clear form inputs
-const clearForm = () => {
-    musicFile.value = null
-    musicDescription.value = ''
-    singerName.value = ''
+  const song = await songStore.addNewSong(newSong.value)
+  console.log(song)
+  closeModal()
 }
 
 const closeModal = () => {
-
-    emit('close') // Emit close event
-    router.push({ name: 'music' }) // Navigate to music page
-}
-
-// Define emits
-const emit = defineEmits(['close'])
-
-
-
-</script>
-
-<template>
-    <div class="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50">
-        <div class="bg-white text-black p-6 rounded-lg shadow-lg w-96">
-            <h2 class="text-xl font-bold mb-4">Add New Song</h2>
-
-            <!-- Input for file upload -->
-            <input ref="musicFile" type="file" accept="audio/*" class="w-full p-2 mb-4 border border-gray-300 rounded"
-                @change="handleFileSelect($event.target.files)" />
-
-            <!-- Input for singer name -->
-            <input v-model="singerName" type="text" class="w-full p-2 mb-4 border border-gray-300 rounded"
-                placeholder="Singer Name" />
-
-            <!-- Input for music description -->
-            <input v-model="musicDescription" type="text" class="w-full p-2 mb-4 border border-gray-300 rounded"
-                placeholder="Music Description" />
-
-            <div class="flex justify-end">
-                <button @click="addSong" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    Add
-                </button>
-                <button @click="closeModal" class="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                    Cancel
-                </button>
-            </div>
-        </div>
-
   router.push({ name: 'mysong' })
 }
 
 const handleFileSelect = (files) => {
-  if (files && files.length > 0) {
-    musicFile.value = files[0]
+  if (files.length > 0) {
+    const music = URL.createObjectURL(files[0])
+    newSong.value.musicFile = music
+  }
+}
+
+// เพิ่มฟังก์ชันสำหรับเลือกและแสดงรูปปกเพลง
+const handleCoverSelect = (files) => {
+  if (files.length > 0) {
+    const cover = URL.createObjectURL(files[0])
+    newSong.value.albumCover = cover
   }
 }
 </script>
@@ -120,47 +54,92 @@ const handleFileSelect = (files) => {
   <div
     class="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50"
   >
-    <div class="bg-white text-black p-6 rounded-lg shadow-lg w-96">
-      <h2 class="text-xl font-bold mb-4">Add New Song</h2>
+    <div
+      class="bg-white text-black p-6 rounded-lg shadow-lg w-full max-w-4xl flex space-x-6"
+    >
+      <!-- ส่วนของรูปปกเพลงใหญ่ทางซ้าย -->
+      <div class="w-1/2">
+        <label class="block mb-2 font-bold">รูปปกเพลง</label>
+        <div class="aspect-w-1 aspect-h-1">
+          <img
+            v-if="newSong.albumCover"
+            :src="newSong.albumCover"
+            alt="Album Cover"
+            class="object-cover w-full h-full rounded-lg border border-gray-300"
+          />
+          <div
+            v-else
+            class="bg-gray-100 flex justify-center items-center w-full h-full rounded-lg border border-gray-300"
+          >
+            <span class="text-gray-500">เลือกรูปปก</span>
+          </div>
+        </div>
 
-      <input
-        ref="musicFile"
-        type="file"
-        accept="audio/*"
-        class="w-full p-2 mb-4 border border-gray-300 rounded"
-        @change="handleFileSelect($event.target.files)"
-      />
+        <!-- ปุ่มอัปโหลดรูปปก -->
+        <input
+          type="file"
+          accept="image/*"
+          class="mt-4 block w-full text-sm text-gray-900 bg-gray-100 border border-gray-300 rounded-lg cursor-pointer"
+          @change="handleCoverSelect($event.target.files)"
+        />
+      </div>
 
-      <!-- Input for singer name -->
-      <input
-        v-model="singerName"
-        type="text"
-        class="w-full p-2 mb-4 border border-gray-300 rounded"
-        placeholder="Singer Name"
-      />
+      <!-- ฟอร์มกรอกข้อมูลทางขวา -->
+      <div class="w-1/2 space-y-4">
+        <h2 class="text-2xl font-bold mb-4">เพิ่มเพลงใหม่</h2>
 
-      <input
-        v-model="musicDescription"
-        type="text"
-        class="w-full p-2 mb-4 border border-gray-300 rounded"
-        placeholder="Music Description"
-      />
+        <!-- Input for music name -->
+        <input
+          v-model="newSong.musicName"
+          type="text"
+          class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+          placeholder="ชื่อเพลง"
+        />
 
-      <div class="flex justify-end">
-        <button
-          @click="createSong"
-          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Add
-        </button>
-        <button
-          @click="closeModal"
-          class="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-        >
-          Cancel
-        </button>
+        <!-- Input for artist name -->
+        <input
+          v-model="newSong.artist"
+          type="text"
+          class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+          placeholder="ชื่อศิลปิน"
+        />
+
+        <!-- Input for music description -->
+        <input
+          v-model="newSong.musicDescription"
+          type="text"
+          class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+          placeholder="คำอธิบายเพลง"
+        />
+
+        <!-- Updated file input to accept audio -->
+        <input
+          type="file"
+          accept="audio/*"
+          class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          @change="handleFileSelect($event.target.files)"
+        />
+
+        <div class="flex justify-end space-x-2">
+          <!-- Submit button in Thai -->
+          <button
+            @click="createSong"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            เพิ่มเพลง
+          </button>
+
+          <!-- Cancel button in Thai -->
+          <button
+            @click="closeModal"
+            class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+          >
+            ยกเลิก
+          </button>
+        </div>
       </div>
     </div>
+  </div>
 </template>
 
 <style scoped></style>

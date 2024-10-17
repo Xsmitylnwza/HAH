@@ -70,8 +70,7 @@ async function editItem(url, id, editItem) {
   }
 }
 
-async function login(username, password) {
-  const url = 'http://localhost:5001/users'
+async function login(url, username, password) {
   try {
     const res = await fetch(url, {
       method: 'GET',
@@ -83,6 +82,7 @@ async function login(username, password) {
     const user = users.find(
       (user) => user.username === username && user.password === password
     )
+
     return user
   } catch (error) {
     console.log(`error: ${error}`)

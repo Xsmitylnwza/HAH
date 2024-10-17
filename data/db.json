@@ -13,7 +13,7 @@
     {
       "username": "ikkeweww",
       "password": "123456",
-      "clientId": "4728188e9b44412682442a7f74f7cce3",
+      "clientId": "4728188e9b44412682442a7f74f7cce3"
     },
     {
       "username": "blue",
@@ -23,47 +23,12 @@
   ],
   "songs": [
     {
-      "id": "5917",
-      "File": "musicFile.value",
-      "Singer": "aa",
-      "description": "aa"
-    },
-    {
-      "id": "a662",
-      "File": "musicFile.value",
-      "Singer": "aa",
-      "description": "aa"
-    },
-    {
-      "id": "ed90",
-      "File": "musicFile.value",
-      "Singer": "aa",
-      "description": "aa"
-    },
-    {
-      "id": "1f92",
-      "File": {},
-      "Singer": "asa",
-      "description": "ax"
-    },
-    {
-      "id": "23b0",
-      "File": {},
-      "Singer": "asa",
-      "description": "ax"
-    },
-    {
-      "id": "13c2",
-      "File": {},
-      "Singer": "asa",
-      "description": "ax"
-    },
-    {
-      "id": "26c6",
-      "File": {},
-      "Singer": "sasa",
-      "description": "ssd"
-
+      "id": "4f8f",
+      "albumCover": "blob:http://localhost:5173/662090be-ba8a-4454-8424-3670f5cb708d",
+      "artist": "TEs",
+      "musicName": "Tes",
+      "musicDescription": "TEst",
+      "musicFile": "blob:http://localhost:5173/35abf95e-6280-460e-81cf-fb014a8d0e67"
     }
   ]
 }

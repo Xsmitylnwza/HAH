@@ -1,12 +1,17 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import Header from './Header.vue'
-import { fetchProfileFromStorage, getAccessToken } from '../stores/login'
+import { fetchProfileFromStorage } from '../stores/login'
 import { useRouter } from 'vue-router'
+import { useSongStore } from '@/stores/song'
 
+const songStore = useSongStore()
 const router = useRouter()
 const isLoggedIn = ref(false)
 const username = ref('')
+const songs = ref([])
+const currentAudio = ref(null)
+const currentSong = ref(null)
 
 onMounted(async () => {
   const code = localStorage.getItem('code')
@@ -16,6 +21,8 @@ onMounted(async () => {
   if (profile) {
     username.value = profile.display_name
   }
+  songs.value = await songStore.setAllSongs()
+  console.log(songs.value)
 })
 
 const toggleAddSong = () => {
@@ -24,6 +31,22 @@ const toggleAddSong = () => {
 
 const login = () => {
   router.push({ name: 'login' })
+}
+
+const playSong = (song) => {
+  if (currentAudio.value) {
+    currentAudio.value.pause()
+  }
+  console.log(song.musicFile)
+
+  // ใช้ URL ของ blob เพื่อเล่นเพลง
+  currentAudio.value = new Audio(song.musicFile)
+
+  currentAudio.value.play().catch((error) => {
+    console.error('Error playing audio:', error)
+  })
+
+  currentSong.value = song
 }
 </script>
 
@@ -37,7 +60,7 @@ const login = () => {
             <input
               type="text"
               v-model="searchInput"
-              placeholder="Search for an music"
+              placeholder="Search for a music"
               class="w-full pl-10 pr-4 py-4 rounded-3xl border border-gray-300 text-lg shadow-md focus:outline-none"
               @input="search"
             />
@@ -82,7 +105,6 @@ const login = () => {
       <h2 class="text-3xl font-bold">Rainlight Riot</h2>
     </div>
 
-    <!-- เพิ่มปุ่ม My Song -->
     <button
       class="text-center bg-white text-purple-600 font-bold px-6 py-3 rounded-full shadow-lg hover:bg-purple-600 hover:text-white transition duration-300 ease-in-out mb-6"
       @click="router.push({ name: 'mysong' })"
@@ -94,6 +116,38 @@ const login = () => {
   <div class="ml-64 mt-16 p-6 bg-base-200 rounded-lg shadow-lg">
     <h1 class="text-3xl font-bold text-primary mb-4">My Songs</h1>
     <button @click="toggleAddSong" class="btn btn-primary">Add Song</button>
+
+    <table class="table-auto w-full mt-6">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="px-4 py-2">Cover</th>
+          <th class="px-4 py-2">Song Title</th>
+          <th class="px-4 py-2">Artist</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="song in songs"
+          :key="song.id"
+          :class="[
+            'hover:bg-gray-100 cursor-pointer',
+            { 'bg-blue-100': currentSong === song }
+          ]"
+          @click="playSong(song)"
+        >
+          <td class="px-4 py-2">
+            <img
+              :src="song.albumCover"
+              alt="Album Cover"
+              class="w-16 h-16 rounded-lg"
+            />
+          </td>
+          <td class="px-4 py-2">{{ song.musicName }}</td>
+          <td class="px-4 py-2">{{ song.artist }}</td>
+        </tr>
+      </tbody>
+    </table>
+
     <RouterView />
   </div>
 </template>
