@@ -60,9 +60,7 @@ onMounted(async () => {
   tracks.value = playlistStore.getTracks
 })
 
-const toggleAddSong = () => {
-  router.push({ name: 'AddSong' })
-}
+
 
 const toggleCreate = () => {
   router.push({ name: 'create' })
@@ -161,15 +159,13 @@ const login = () => {
       </button>
     </div>
 
+    
     <!-- เพิ่มปุ่ม My Song -->
     <button
       class="text-center bg-white text-purple-600 font-bold px-6 py-3 rounded-full shadow-lg hover:bg-purple-600 hover:text-white transition duration-300 ease-in-out mb-6"
-      @click="toggleAddSong">
-      Add Song
+      @click="router.push({ name: 'mysong' })">
+      My Song
     </button>
-
-
-
 
 
     <div class="mt-4">

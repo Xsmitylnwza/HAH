@@ -1,67 +1,117 @@
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { addItem } from '../lib/fetchUtils'
+import { fetchProfileFromStorage } from '../stores/login'
+
+const router = useRouter()
+const user_id = ref('')
+
+// Music fields
+const musicFile = ref(null)
+const musicDescription = ref('')
+const singerName = ref('')
+
+// Fetch user ID
+onMounted(async () => {
+  const profile = await fetchProfileFromStorage()
+  if (profile) {
+    user_id.value = profile.id
+  }
+})
+
+// Submit form to add song
+const createSong = async () => {
+  if (musicFile.value && singerName.value) {
+    const formData = new FormData()
+    formData.append('file', musicFile.value)
+    formData.append('description', musicDescription.value)
+    formData.append('singer', singerName.value)
+
+    try {
+      await addItem(user_id.value, formData)
+      clearForm()
+      closeModal()
+    } catch (error) {
+      console.error('Error adding song:', error)
+    }
+  } else {
+    alert('Please provide a music file and singer name.')
+  }
+}
+
+// Clear form inputs
+const clearForm = () => {
+  musicFile.value = null
+  musicDescription.value = ''
+  singerName.value = ''
+}
+
+// Close modal and navigate back to music page
+const closeModal = () => {
+  emit('close') // Emit close event
+  router.push({ name: 'music' }) // Navigate to music page
+}
+
+// Define emits
+const emit = defineEmits(['close'])
+
+// Handling file selection using ref instead of event
+const handleFileSelect = (files) => {
+  if (files && files.length > 0) {
+    musicFile.value = files[0]
+  }
+}
+</script>
+
 <template>
-  <div class="modal-overlay">
-    <div class="modal">
-      <button class="close" @click="$emit('close')">X</button>
-      <h2>Add a New Song</h2>
-      <form @submit.prevent="addSong">
-        <div>
-          <label for="songTitle">Song Title:</label>
-          <input type="text" v-model="songTitle" required />
-        </div>
-        <div>
-          <label for="artistName">Artist Name:</label>
-          <input type="text" v-model="artistName" required />
-        </div>
-        <div>
-          <label for="songLink">Song Link:</label>
-          <input type="url" v-model="songLink" required />
-        </div>
-        <button type="submit">Add Song</button>
-      </form>
+  <div
+    class="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50"
+  >
+    <div class="bg-white text-black p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-xl font-bold mb-4">Add New Song</h2>
+
+      <!-- Input for file upload -->
+      <input
+        ref="musicFile"
+        type="file"
+        accept="audio/*"
+        class="w-full p-2 mb-4 border border-gray-300 rounded"
+        @change="handleFileSelect($event.target.files)"
+      />
+
+      <!-- Input for singer name -->
+      <input
+        v-model="singerName"
+        type="text"
+        class="w-full p-2 mb-4 border border-gray-300 rounded"
+        placeholder="Singer Name"
+      />
+
+      <!-- Input for music description -->
+      <input
+        v-model="musicDescription"
+        type="text"
+        class="w-full p-2 mb-4 border border-gray-300 rounded"
+        placeholder="Music Description"
+      />
+
+      <div class="flex justify-end">
+        <button
+          @click="createSong"
+          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Add
+        </button>
+        <button
+          @click="closeModal"
+          class="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref, defineEmits } from 'vue'
-import { usePlaylistStore } from '../stores/playlist'
-
-const emit = defineEmits()
-const songTitle = ref('')
-const artistName = ref('')
-const songLink = ref('')
-const playlistStore = usePlaylistStore()
-
-const addSong = async () => {
-  await playlistStore.addSong({ title: songTitle.value, artist: artistName.value, link: songLink.value })
-  songTitle.value = ''
-  artistName.value = ''
-  songLink.value = ''
-  emit('close')
-}
-</script>
-
-<style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.modal {
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-}
-.close {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-</style>
+<style scoped></style>
