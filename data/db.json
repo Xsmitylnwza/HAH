@@ -3,23 +3,22 @@
     {
       "username": "ccbluecc",
       "password": "123456",
-      "clientId": "904da645d0e64016ab25cbfc9ce444a4",
-      "clientSecret": "29fc6f15441b451f91885b1b423e5230",
-      "id": "3481"
+      "clientId": "904da645d0e64016ab25cbfc9ce444a4"
     },
     {
       "username": "praewa",
       "password": "123456",
-      "clientId": "33582544dfb6432faed014f9b1c26e67",
-      "clientSecret": "29fc6f15441b451f91885b1b423e5230",
-      "id": "9da6"
+      "clientId": "33582544dfb6432faed014f9b1c26e67"
     },
     {
       "username": "ikkeweww",
       "password": "123456",
       "clientId": "4728188e9b44412682442a7f74f7cce3",
-      "clientSecret": "29fc6f15441b451f91885b1b423e5230",
-      "id": "0c63"
+    },
+    {
+      "username": "blue",
+      "password": "123456",
+      "clientId": "be7d25e4375347d79b83d4cb3be2ffdc"
     }
   ],
   "songs": [
@@ -64,6 +63,7 @@
       "File": {},
       "Singer": "sasa",
       "description": "ssd"
+
     }
   ]
 }
