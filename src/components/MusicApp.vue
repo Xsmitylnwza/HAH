@@ -212,12 +212,14 @@ watch(
       </button>
     </div>
 
-    <button
-      class="text-center bg-white text-purple-600 font-bold px-6 py-3 rounded-full shadow-lg hover:bg-purple-600 hover:text-white transition duration-300 ease-in-out mb-6"
-      @click="router.push({ name: 'mysong' })"
-    >
-      My Song
-    </button>
+    <div class="flex justify-start mb-6 ml-4">
+      <button
+        class="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold w-[45%] p-4 rounded-full shadow-lg hover:scale-105 transition duration-300 ease-in-out"
+        @click="router.push({ name: 'mysong' })"
+      >
+        My Song
+      </button>
+    </div>
 
     <div class="mt-4">
       <div

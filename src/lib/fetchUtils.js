@@ -21,7 +21,6 @@ async function getItemById(url, id) {
   }
 }
 
-
 async function deleteItemById(url, id) {
   console.log(`${url}/${id}`)
 
@@ -37,6 +36,8 @@ async function deleteItemById(url, id) {
 }
 
 async function addItem(url, newItem) {
+  console.log(newItem)
+
   try {
     const res = await fetch(url, {
       method: 'POST',
