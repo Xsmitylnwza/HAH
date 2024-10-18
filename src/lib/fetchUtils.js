@@ -8,6 +8,7 @@ async function getItems(url) {
     throw new Error(error)
   }
 }
+
 async function getItemById(url, id) {
   try {
     const data = await fetch(`${url}/${id}`)
@@ -19,6 +20,7 @@ async function getItemById(url, id) {
     throw new Error(error)
   }
 }
+
 
 async function deleteItemById(url, id) {
   console.log(`${url}/${id}`)

@@ -1,53 +1,67 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import Header from './Header.vue'
-import { fetchProfileFromStorage } from '../stores/login'
-import { useRouter } from 'vue-router'
-import { useSongStore } from '@/stores/song'
+import { onMounted, ref, watch, watchEffect } from "vue";
+import Header from "./Header.vue";
+import { fetchProfileFromStorage } from "../stores/login";
+import { useRouter } from "vue-router";
+import { useSongStore } from "@/stores/song";
+import EditMySong from "./EditMySong.vue";
 
-const songStore = useSongStore()
-const router = useRouter()
-const isLoggedIn = ref(false)
-const username = ref('')
-const songs = ref([])
-const currentAudio = ref(null)
-const currentSong = ref(null)
+const songStore = useSongStore();
+const router = useRouter();
+const isLoggedIn = ref(false);
+const username = ref("");
+const songs = ref([]);
+const selectSongId = ref('')
+const currentAudio = ref(null);
+const currentSong = ref(null);
+const showEdit = ref(false)
 
 onMounted(async () => {
-  const code = localStorage.getItem('code')
-  let localAccessToken = localStorage.getItem('access_token')
-  if (localAccessToken && code) isLoggedIn.value = true
-  const profile = await fetchProfileFromStorage()
+  const code = localStorage.getItem("code");
+  let localAccessToken = localStorage.getItem("access_token");
+  if (localAccessToken && code) isLoggedIn.value = true;
+  const profile = await fetchProfileFromStorage();
   if (profile) {
-    username.value = profile.display_name
+    username.value = profile.display_name;
   }
-  songs.value = await songStore.setAllSongs()
-  console.log(songs.value)
-})
+  await songStore.setAllSongs();
+  // console.log(songs.value);
+  
+});
 
 const toggleAddSong = () => {
-  router.push({ name: 'AddSong' })
-}
+  router.push({ name: "AddSong" });
+};
+
+const closeEditModal = (value) => {
+  showEdit.value = value 
+} 
 
 const login = () => {
-  router.push({ name: 'login' })
-}
+  router.push({ name: "login" });
+};
 
 const playSong = (song) => {
   if (currentAudio.value) {
-    currentAudio.value.pause()
+    currentAudio.value.pause();
   }
-  console.log(song.musicFile)
+  console.log(song.musicFile);
 
   // ใช้ URL ของ blob เพื่อเล่นเพลง
-  currentAudio.value = new Audio(song.musicFile)
+  currentAudio.value = new Audio(song.musicFile);
 
   currentAudio.value.play().catch((error) => {
-    console.error('Error playing audio:', error)
-  })
+    console.error("Error playing audio:", error);
+  });
 
-  currentSong.value = song
-}
+  currentSong.value = song;
+};
+
+
+const editSongData = (id) => {
+  showEdit.value = true
+  selectSongId.value = id
+};
 </script>
 
 <template>
@@ -123,31 +137,44 @@ const playSong = (song) => {
           <th class="px-4 py-2">Cover</th>
           <th class="px-4 py-2">Song Title</th>
           <th class="px-4 py-2">Artist</th>
+          <th class="px-4 py-2">Action</th>
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="song in songs"
+          v-for="song in songStore.songs"
           :key="song.id"
           :class="[
             'hover:bg-gray-100 cursor-pointer',
-            { 'bg-blue-100': currentSong === song }
+            { 'bg-blue-100': currentSong === song },
           ]"
           @click="playSong(song)"
         >
-          <td class="px-4 py-2">
+          <td class="px-4 py-2 flex justify-center">
             <img
               :src="song.albumCover"
               alt="Album Cover"
               class="w-16 h-16 rounded-lg"
             />
           </td>
-          <td class="px-4 py-2">{{ song.musicName }}</td>
-          <td class="px-4 py-2">{{ song.artist }}</td>
+          <td class="px-4 py-2 text-center">{{ song.musicName }}</td>
+          <td class="px-4 py-2 text-center">{{ song.artist }}</td>
+          <td class="px-4 py-2 text-center">
+            <button class="btn btn-secondary" @click="editSongData(song.id)">
+              Edit
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
 
+    <teleport to="body">
+    <EditMySong
+      v-if="showEdit"
+      :songId="selectSongId"
+      @closeModal="closeEditModal"
+    />
+  </teleport>
     <RouterView />
   </div>
 </template>
