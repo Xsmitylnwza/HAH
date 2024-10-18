@@ -14,7 +14,7 @@ const newSong = ref({
   artist: '',
   musicName: '',
   musicDescription: '',
-  musicFile: null
+  musicLink: '' // เพิ่มฟิลด์สำหรับลิงก์เพลงแทนไฟล์
 })
 
 onMounted(async () => {
@@ -32,13 +32,6 @@ const createSong = async () => {
 
 const closeModal = () => {
   router.push({ name: 'mysong' })
-}
-
-const handleFileSelect = (files) => {
-  if (files.length > 0) {
-    const music = URL.createObjectURL(files[0])
-    newSong.value.musicFile = music
-  }
 }
 
 // เพิ่มฟังก์ชันสำหรับเลือกและแสดงรูปปกเพลง
@@ -112,12 +105,12 @@ const handleCoverSelect = (files) => {
           placeholder="คำอธิบายเพลง"
         />
 
-        <!-- Updated file input to accept audio -->
+        <!-- Input for music link -->
         <input
-          type="file"
-          accept="audio/*"
-          class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          @change="handleFileSelect($event.target.files)"
+          v-model="newSong.musicLink"
+          type="text"
+          class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+          placeholder="ลิงก์เพลง"
         />
 
         <div class="flex justify-end space-x-2">

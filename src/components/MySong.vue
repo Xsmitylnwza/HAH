@@ -37,10 +37,10 @@ const playSong = (song) => {
   if (currentAudio.value) {
     currentAudio.value.pause()
   }
-  console.log(song.musicFile)
+  console.log(song.musicLink)
 
-  // ใช้ URL ของ blob เพื่อเล่นเพลง
-  currentAudio.value = new Audio(song.musicFile)
+  // ใช้ musicLink แทนการเล่นจากไฟล์
+  currentAudio.value = new Audio(song.musicLink)
 
   currentAudio.value.play().catch((error) => {
     console.error('Error playing audio:', error)
