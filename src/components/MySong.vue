@@ -1,65 +1,79 @@
 <script setup>
-import { onMounted, ref, watch, watchEffect } from "vue";
-import Header from "./Header.vue";
-import { fetchProfileFromStorage } from "../stores/login";
-import { useRouter } from "vue-router";
-import { useSongStore } from "@/stores/song";
-import EditMySong from "./EditMySong.vue";
+import { onMounted, ref } from 'vue'
+import Header from './Header.vue'
+import { fetchProfileFromStorage } from '../stores/login'
+import { useRouter } from 'vue-router'
+import { useSongStore } from '@/stores/song'
+import EditMySong from './EditMySong.vue'
 
-const songStore = useSongStore();
-const router = useRouter();
-const isLoggedIn = ref(false);
-const username = ref("");
-const songs = ref([]);
+// Importing the default note image
+import noteImage from '../assets/note.svg'
+
+const songStore = useSongStore()
+const router = useRouter()
+const isLoggedIn = ref(false)
+const username = ref('')
 const selectSongId = ref('')
-const currentAudio = ref(null);
-const currentSong = ref(null);
+const currentAudio = ref(null)
+const currentSong = ref(null)
 const showEdit = ref(false)
 
 onMounted(async () => {
-  const code = localStorage.getItem("code");
-  let localAccessToken = localStorage.getItem("access_token");
-  if (localAccessToken && code) isLoggedIn.value = true;
-  const profile = await fetchProfileFromStorage();
+  const code = localStorage.getItem('code')
+  let localAccessToken = localStorage.getItem('access_token')
+  if (localAccessToken && code) isLoggedIn.value = true
+  const profile = await fetchProfileFromStorage()
   if (profile) {
-    username.value = profile.display_name;
+    username.value = profile.display_name
   }
-  await songStore.setAllSongs();
-});
+  await songStore.setAllSongs()
+})
 
 const toggleAddSong = () => {
-  router.push({ name: "AddSong" });
-};
+  router.push({ name: 'AddSong' })
+}
 
 const closeEditModal = (value) => {
-  showEdit.value = value 
-} 
+  showEdit.value = value
+}
 
 const login = () => {
-  router.push({ name: "login" });
-};
+  router.push({ name: 'login' })
+}
 
 const playSong = (song) => {
   if (currentAudio.value) {
-    currentAudio.value.pause();
+    currentAudio.value.pause()
   }
   console.log(song.musicLink)
 
-  // ใช้ musicLink แทนการเล่นจากไฟล์
+  // Play music from musicLink
   currentAudio.value = new Audio(song.musicLink)
 
   currentAudio.value.play().catch((error) => {
-    console.error("Error playing audio:", error);
-  });
+    console.error('Error playing audio:', error)
+  })
 
-  currentSong.value = song;
-};
-
+  currentSong.value = song
+}
 
 const editSongData = (id) => {
   showEdit.value = true
   selectSongId.value = id
-};
+}
+
+const imageError = (event) => {
+  event.target.src = noteImage
+  event.target.classList.add(
+    'border-2',
+    'w-14',
+    'h-14',
+    'rounded-lg',
+    'filter',
+    'brightness-0',
+    'invert'
+  )
+}
 </script>
 
 <template>
@@ -73,7 +87,7 @@ const editSongData = (id) => {
               type="text"
               v-model="searchInput"
               placeholder="Search for a music"
-              class="w-full pl-10 pr-4 py-4 rounded-3xl border border-gray-300 text-lg shadow-md focus:outline-none"
+              class="w-full pl-10 pr-4 py-4 rounded-3xl border border-gray-300 text-lg shadow-md focus:outline-none focus:ring focus:ring-blue-300"
               @input="search"
             />
             <img
@@ -117,48 +131,62 @@ const editSongData = (id) => {
       <h2 class="text-3xl font-bold">Rainlight Riot</h2>
     </div>
 
-    <button
-      class="text-center bg-white text-purple-600 font-bold px-6 py-3 rounded-full shadow-lg hover:bg-purple-600 hover:text-white transition duration-300 ease-in-out mb-6"
-      @click="router.push({ name: 'mysong' })"
-    >
-      My Song
-    </button>
+    <div class="flex justify-start mb-6 ml-4">
+      <button
+        class="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold w-[45%] p-4 rounded-full shadow-lg hover:scale-105 transition duration-300 ease-in-out"
+        @click="router.push({ name: 'mysong' })"
+      >
+        My Song
+      </button>
+    </div>
   </div>
 
   <div class="ml-64 mt-16 p-6 bg-base-200 rounded-lg shadow-lg">
     <h1 class="text-3xl font-bold text-primary mb-4">My Songs</h1>
     <button @click="toggleAddSong" class="btn btn-primary">Add Song</button>
 
-    <table class="table-auto w-full mt-6">
-      <thead>
-        <tr class="bg-gray-200">
-          <th class="px-4 py-2">Cover</th>
-          <th class="px-4 py-2">Song Title</th>
-          <th class="px-4 py-2">Artist</th>
-          <th class="px-4 py-2">Action</th>
+    <table
+      class="table-auto w-full mt-6 border border-gray-300 rounded-lg overflow-hidden"
+    >
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="px-4 py-2 text-center text-black">Cover</th>
+          <th class="px-4 py-2 text-center text-black">Song Title</th>
+          <th class="px-4 py-2 text-center text-black">Artist</th>
+          <th class="px-4 py-2 text-center text-black">Action</th>
         </tr>
       </thead>
       <tbody>
         <tr
           v-for="song in songStore.songs"
           :key="song.id"
-          :class="[
-            'hover:bg-gray-100 cursor-pointer',
-            { 'bg-blue-100': currentSong === song },
-          ]"
+          class="hover:bg-gray-800 transition duration-300 cursor-pointer"
           @click="playSong(song)"
         >
           <td class="px-4 py-2 flex justify-center">
-            <img
-              :src="song.albumCover"
-              alt="Album Cover"
-              class="w-16 h-16 rounded-lg"
-            />
+            <div v-if="song.albumCover">
+              <img
+                :src="song.albumCover"
+                alt="Album Cover"
+                class="w-16 h-16 p-2 object-cover rounded-lg transition-transform duration-300 hover:scale-110"
+                @error="imageError"
+              />
+            </div>
+            <div v-else class="border-2 border-gray-500 rounded-2xl">
+              <img
+                src="../assets/note.svg"
+                alt="Default Cover"
+                class="w-16 h-16 rounded-lg filter brightness-0 invert"
+              />
+            </div>
           </td>
-          <td class="px-4 py-2 text-center">{{ song.musicName }}</td>
-          <td class="px-4 py-2 text-center">{{ song.artist }}</td>
+          <td class="px-4 py-2 text-center text-white">{{ song.musicName }}</td>
+          <td class="px-4 py-2 text-center text-white">{{ song.artist }}</td>
           <td class="px-4 py-2 text-center">
-            <button class="btn btn-secondary" @click="editSongData(song.id)">
+            <button
+              class="btn btn-secondary"
+              @click.stop="editSongData(song.id)"
+            >
               Edit
             </button>
           </td>
@@ -167,14 +195,12 @@ const editSongData = (id) => {
     </table>
 
     <teleport to="body">
-    <EditMySong
-      v-if="showEdit"
-      :songId="selectSongId"
-      @closeModal="closeEditModal"
-    />
-  </teleport>
+      <EditMySong
+        v-if="showEdit"
+        :songId="selectSongId"
+        @closeModal="closeEditModal"
+      />
+    </teleport>
     <RouterView />
   </div>
 </template>
-
-<style scoped></style>
