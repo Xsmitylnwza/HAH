@@ -18,6 +18,8 @@ const isPlaying = ref(false)
 
 const click = async (track) => {
   try {
+    console.log('click', track);
+    
     const tracks = await playlistStore.getTrackById(accessToken, track.id)
     if (tracks && tracks.length > 0) {
       const firstTrack = tracks[0]

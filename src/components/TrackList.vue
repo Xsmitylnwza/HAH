@@ -1,23 +1,20 @@
 <script setup>
 import { ref } from 'vue'
+import MusicPlayer from './MusicPlayer.vue'
+
 const props = defineProps({
   tracks: Array,
   album: Object
 })
-let previewUrl = ref('')
-const music = ref('')
 
-const click = async (track) => {
-  previewUrl.value = track.preview_url
-  if (music.value) {
-    if (!music.value.paused) {
-      music.value.pause()
-    }
-    music.value.load()
-    music.value
-      .play()
-      .catch((error) => console.error('Audio playback error:', error))
-  }
+let previewUrl = ref('')
+let currentTrack = ref(null)
+
+const click = (track) => {
+  previewUrl.value = track.preview_url // กำหนด URL ของเพลงที่ถูกคลิก
+  currentTrack.value = track // กำหนด track ที่ถูกเลือก
+  console.log('click', track);
+  
 }
 </script>
 
@@ -61,10 +58,12 @@ const click = async (track) => {
         </tbody>
       </table>
     </div>
-    <div v-if="previewUrl" class="mt-4">
-      <audio controls class="hidden" ref="music">
-        <source :src="previewUrl" type="audio/mp3" />
-      </audio>
-    </div>
+
+    <MusicPlayer
+      v-if="currentTrack"
+      :preview-url="previewUrl"
+      :current-track="currentTrack"
+      :album="album"
+    />
   </div>
 </template>
