@@ -39,12 +39,6 @@ const loadSongData = () => {
   form.musicFile = song.value.musicFile
 }
 
-const handleFileSelect = (files) => {
-  if (files.length > 0) {
-    form.musicFile = URL.createObjectURL(files[0])
-  }
-}
-
 const handleCoverSelect = (files) => {
   if (files.length > 0) {
     form.albumCover = URL.createObjectURL(files[0])
@@ -71,7 +65,7 @@ const fetchSong = async () => {
 <template>
   <div class="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50">
     <div class="bg-white text-black p-6 rounded-lg shadow-lg w-full max-w-4xl flex space-x-6">
-      <!-- Album Cover Section -->
+
       <div class="w-1/2">
         <label class="block mb-2 font-bold">รูปปกเพลง</label>
         <div class="aspect-w-1 aspect-h-1">
@@ -96,7 +90,6 @@ const fetchSong = async () => {
         />
       </div>
 
-      <!-- Form Section -->
       <div class="w-1/2">
         <h2 class="text-2xl font-bold mb-4">แก้ไขเพลง</h2>
 
