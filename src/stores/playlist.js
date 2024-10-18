@@ -7,7 +7,8 @@ import {
   getTrackByPlaylistsId,
   createPlaylist,
   editPlaylist,
-  deletePlaylist
+  deletePlaylist,
+  deleteSong
 } from '../lib/fetchUtils'
 import { ref } from 'vue'
 
@@ -100,6 +101,19 @@ export const usePlaylistStore = defineStore('playlist', () => {
     }
   }
 
+  const deleteSongFromPlayList = async (accessToken, trackId, uri) => {
+    console.log(trackId);
+    console.log(uri);
+    try {
+      const response = await deleteSong(accessToken, trackId, uri)
+
+      
+      return response
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   return {
     playlist,
     tracks,
@@ -114,7 +128,8 @@ export const usePlaylistStore = defineStore('playlist', () => {
     getTrackByPlaylistsIds,
     createNewPlaylist,
     updatePlaylist,
-    deletePlaylists
+    deletePlaylists,
+    deleteSongFromPlayList
   }
 })
 

@@ -63,6 +63,7 @@ onMounted(async () => {
   )
 
   tracks.value = playlistStore.getTracks()
+  
 })
 const toggleCreate = () => {
   router.push({ name: 'create' })
@@ -98,6 +99,8 @@ const handleDelete = async () => {
 
 const toggleDropdown = (userId) => {
   showDropdown.value = showDropdown.value === userId ? null : userId
+  console.log(showDropdown.value);
+  
 }
 
 const toggleEdit = async (playlistsId) => {
@@ -290,7 +293,9 @@ watch(
   </div>
 
   <div v-else class="ml-64">
-    <PlayList :tracks="tracks" />
+    <PlayList :tracks="tracks" 
+     :playlistId="selectedPlaylistId"
+    />
   </div>
 
   <teleport to="body">
