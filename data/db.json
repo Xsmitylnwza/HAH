@@ -47,6 +47,14 @@
       "musicName": "ฟหก",
       "musicDescription": "ฟหกหฟก",
       "musicLink": "https://www.dropbox.com/scl/fi/9x8tglwdjj870ale8k8dg/videoplayback.mp3?rlkey=trzhocq4amkfu4h1uw6g7ew3h&st=qzb3zhvr&raw=1"
+    },
+    {
+      "albumCover": "blob:http://localhost:5173/2325d325-7c0c-4823-864e-66fd902e518d",
+      "artist": "อิคคิว 1",
+      "musicName": "เหมือนวิวาห์ 1",
+      "musicDescription": "หหห 1",
+      "musicLink": "https://files.fm/u/458kuha3u3",
+      "id": "be23"
     }
   ]
 }

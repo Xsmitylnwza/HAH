@@ -18,7 +18,7 @@ const form = reactive({
   artist: '',
   musicName: '',
   musicDescription: '',
-  musicFile: null
+  musicLink: null
 })
 
 onMounted(async () => {
@@ -36,7 +36,7 @@ const loadSongData = () => {
   form.artist = song.value.artist
   form.musicName = song.value.musicName
   form.musicDescription = song.value.musicDescription
-  form.musicFile = song.value.musicFile
+  form.musicLink = song.value.musicLink
 }
 
 const handleCoverSelect = (files) => {
