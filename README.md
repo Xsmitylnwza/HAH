@@ -1,4 +1,4 @@
-# rainlightriot
+c# rainlightriot
 
 ## Member
 
@@ -6,10 +6,10 @@
    edit Mysong, delete song from playlist, fetch spotify api
  
  65130500065 นายภูริ ไชยนิคม (20%)<br>
-   UX UI design, List playlist,Default PlayList
+   UX UI design, List Mysong, Add Mysong 
 
  65130500081 นายศุภกร ปรีชานฤตย์ (20%)<br>
-   Search Mysong, Delete Mysong
+   Search Mysong, Delete Mysong,Default PlayList
  
  65130500094 นายชนะพล พันธุวดี (20%) <br>
   fetch spotify api,Login,List album,Search for Artist,CRUD MyPlayList,Play preview of Music
