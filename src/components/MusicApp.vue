@@ -60,8 +60,9 @@ onMounted(async () => {
     accessToken.value,
     "37i9dQZF1DX812gZSD3Ky1"
   );
-
-  tracks.value = playlistStore.getTracks();
+  if (router.currentRoute.value.path === "/music") {
+    tracks.value = playlistStore.getTracks();
+  }
 });
 const toggleCreate = () => {
   router.push({ name: "create" });
