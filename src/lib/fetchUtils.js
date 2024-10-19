@@ -236,19 +236,32 @@ const deletePlaylist = async (access_token, playlist_id) => {
 }
 
 const deleteSong = async (access_token, playlistId, uris) => {
-  const response = await fetch(
-    `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-    {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + access_token
-      },
-      body: JSON.stringify({ tracks: uris.map((uri) => ({ uri })) })
+  const createTracksArray = (uris) => {
+    if (Array.isArray(uris)) {
+      return uris.map((uri) => ({ uri }))
+    } else if (typeof uris === 'string') {
+      return [{ uri: uris }]
+    } else {
+      throw new Error('Invalid URI format')
     }
-  )
-  const song = await response.json()
-  return song
+  }
+  let tracks
+  try {
+    tracks = createTracksArray(uris)
+  } catch (error) {
+    console.error(error.message)
+    return
+  }
+
+  // เรียก API เพื่อ delete songs
+  await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + access_token
+    },
+    body: JSON.stringify({ tracks })
+  })
 }
 
 const getArtisttopTracks = async (access_token, artistId) => {

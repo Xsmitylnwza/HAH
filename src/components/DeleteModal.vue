@@ -21,7 +21,7 @@ const cancel = () => {
 
 const confirmDelete = async () => {
   await playlistStore.deletePlaylists(token, props.playlistId)
-  emit('confirm', props.playlistId)
+  emit('confirm')
 }
 </script>
 

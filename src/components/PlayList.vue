@@ -3,6 +3,7 @@ import { usePlaylistStore } from '../stores/playlist'
 import { ref, watch, onMounted } from 'vue'
 import MusicPlayer from './MusicPlayer.vue'
 import { useRoute } from 'vue-router'
+import DeleteModal from './DeleteModal.vue'
 
 const playlistStore = usePlaylistStore()
 let accessToken = localStorage.getItem('access_token')
@@ -18,6 +19,8 @@ const showDelete = ref(false)
 const uri = ref([])
 const trackId = ref('')
 const tracks = ref([])
+const trackToDelete = ref(null) // To hold the track selected for deletion\
+const trackName = ref('')
 
 onMounted(async () => {
   tracks.value = await playlistStore.getTrackByPlaylistsIds(
@@ -56,29 +59,46 @@ const click = async (track) => {
   }
 }
 
-const deleteSong = async (track) => {
-  const tracksResponse = await playlistStore.getTrackById(accessToken, track.id)
-  if (tracksResponse.length > 1) {
-    uri.value = tracksResponse.map((t) => t.uri)
-  } else if (tracksResponse && tracksResponse.length > 0) {
-    const firstTrack = tracksResponse[0]
-    uri.value = firstTrack.uri
-  } else {
-    resetPlayer()
-    return
-  }
-
-  try {
-    await playlistStore.deleteSongFromPlayList(
+const confirmDelete = async () => {
+  if (trackToDelete.value) {
+    const tracksResponse = await playlistStore.getTrackById(
       accessToken,
-      route.params.playlistid,
-      uri.value
+      trackToDelete.value.id
     )
-    tracks.value = tracks.value.filter((t) => t.id !== track.id)
-    showDelete.value = true
-  } catch (error) {
-    console.error(error)
+    if (tracksResponse.length > 1) {
+      uri.value = tracksResponse.map((t) => t.uri)
+    } else if (tracksResponse && tracksResponse.length > 0) {
+      const firstTrack = tracksResponse[0]
+      uri.value = firstTrack.uri
+    } else {
+      resetPlayer()
+      return
+    }
+
+    try {
+      await playlistStore.deleteSongFromPlayList(
+        accessToken,
+        route.params.playlistid,
+        uri.value
+      )
+      tracks.value = tracks.value.filter((t) => t.id !== trackToDelete.value.id)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      closeDeleteModal()
+    }
   }
+}
+
+const openDeleteModal = (track) => {
+  trackName.value = track.name
+  trackToDelete.value = track // Store the track to delete
+  showDelete.value = true // Show the modal
+}
+
+const closeDeleteModal = () => {
+  showDelete.value = false // Hide the modal
+  trackToDelete.value = null // Reset the track
 }
 
 const resetPlayer = () => {
@@ -140,7 +160,7 @@ const toggleDropdown = (trackId) => {
       >
         <button
           class="block w-full px-4 py-2 hover:bg-gray-200 text-left rounded-lg"
-          @click="deleteSong(track)"
+          @click="openDeleteModal(track)"
         >
           Delete
         </button>
@@ -163,10 +183,10 @@ const toggleDropdown = (trackId) => {
   <teleport to="body">
     <DeleteModal
       v-if="showDelete"
-      message="Are you sure you want to remove this song from this playlist?"
-      @confirm="handleDelete"
+      :message="`Are you sure you want to delete ${trackName}?`"
+      @confirm="confirmDelete"
       @cancel="showDelete = false"
-      :playlistId="selectedPlaylistId"
+      :playlistId="route.params"
     />
   </teleport>
 </template>
