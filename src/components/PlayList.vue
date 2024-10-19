@@ -1,78 +1,78 @@
 <script setup>
-import { usePlaylistStore } from '../stores/playlist'
-import { ref, watch, onMounted } from 'vue'
-import MusicPlayer from './MusicPlayer.vue'
-import { useRoute } from 'vue-router'
-import DeleteModal from './DeleteModal.vue'
+import { usePlaylistStore } from "../stores/playlist";
+import { ref, watch, onMounted } from "vue";
+import MusicPlayer from "./MusicPlayer.vue";
+import { useRoute } from "vue-router";
+import DeleteModal from "./DeleteModal.vue";
 
-const playlistStore = usePlaylistStore()
-let accessToken = localStorage.getItem('access_token')
+const playlistStore = usePlaylistStore();
+let accessToken = localStorage.getItem("access_token");
 
-const route = useRoute()
-const previewUrl = ref('')
-const currentTrack = ref(null)
-const currentTime = ref(0)
-const audioDuration = ref(0)
-const isPlaying = ref(false)
-const showDropdown = ref('')
-const showDelete = ref(false)
-const uri = ref([])
-const trackId = ref('')
-const tracks = ref([])
-const trackToDelete = ref(null) // To hold the track selected for deletion\
-const trackName = ref('')
+const route = useRoute();
+const previewUrl = ref("");
+const currentTrack = ref(null);
+const currentTime = ref(0);
+const audioDuration = ref(0);
+const isPlaying = ref(false);
+const showDropdown = ref("");
+const showDelete = ref(false);
+const uri = ref([]);
+const trackId = ref("");
+const tracks = ref([]);
+const trackToDelete = ref("");
+const trackName = ref("");
 
 onMounted(async () => {
   tracks.value = await playlistStore.getTrackByPlaylistsIds(
     route.params.playlistid,
     accessToken
-  )
-})
+  );
+});
 watch(
   () => route.params.playlistid,
   async (newPlaylistId) => {
     tracks.value = await playlistStore.getTrackByPlaylistsIds(
       newPlaylistId,
       accessToken
-    )
+    );
   }
-)
+);
 
 const click = async (track) => {
   try {
-    const tracks = await playlistStore.getTrackById(accessToken, track.id)
+    const tracks = await playlistStore.getTrackById(accessToken, track.id);
     if (tracks && tracks.length > 0) {
-      const firstTrack = tracks[0]
+      const firstTrack = tracks[0];
       if (firstTrack.preview_url) {
-        previewUrl.value = firstTrack.preview_url
-        trackId.value = firstTrack.id
-        currentTrack.value = track
+        previewUrl.value = firstTrack.preview_url;
+        trackId.value = firstTrack.id;
+        currentTrack.value = track;
       } else {
-        resetPlayer()
+        resetPlayer();
       }
     } else {
-      resetPlayer()
+      resetPlayer();
     }
   } catch (error) {
-    console.error('Error fetching track:', error)
-    resetPlayer()
+    console.error("Error fetching track:", error);
+    resetPlayer();
   }
-}
+};
 
 const confirmDelete = async () => {
   if (trackToDelete.value) {
     const tracksResponse = await playlistStore.getTrackById(
       accessToken,
       trackToDelete.value.id
-    )
+    );
     if (tracksResponse.length > 1) {
-      uri.value = tracksResponse.map((t) => t.uri)
+      uri.value = tracksResponse.map((t) => t.uri);
     } else if (tracksResponse && tracksResponse.length > 0) {
-      const firstTrack = tracksResponse[0]
-      uri.value = firstTrack.uri
+      const firstTrack = tracksResponse[0];
+      uri.value = firstTrack.uri;
     } else {
-      resetPlayer()
-      return
+      resetPlayer();
+      return;
     }
 
     try {
@@ -80,38 +80,39 @@ const confirmDelete = async () => {
         accessToken,
         route.params.playlistid,
         uri.value
-      )
-      tracks.value = tracks.value.filter((t) => t.id !== trackToDelete.value.id)
+      );
+      tracks.value = tracks.value.filter(
+        (t) => t.id !== trackToDelete.value.id
+      );
     } catch (error) {
-      console.error(error)
-    } finally {
-      closeDeleteModal()
+      console.error(error);
     }
   }
-}
+  closeDeleteModal();
+};
 
 const openDeleteModal = (track) => {
-  trackName.value = track.name
-  trackToDelete.value = track // Store the track to delete
-  showDelete.value = true // Show the modal
-}
+  trackName.value = track.name;
+  trackToDelete.value = track; // Store the track to delete
+  showDelete.value = true; // Show the modal
+};
 
 const closeDeleteModal = () => {
-  showDelete.value = false // Hide the modal
-  trackToDelete.value = null // Reset the track
-}
+  showDelete.value = false; // Hide the modal
+  trackToDelete.value = null; // Reset the track
+};
 
 const resetPlayer = () => {
-  previewUrl.value = null
-  currentTrack.value = null
-  currentTime.value = 0
-  audioDuration.value = 0
-  isPlaying.value = false
-}
+  previewUrl.value = null;
+  currentTrack.value = null;
+  currentTime.value = 0;
+  audioDuration.value = 0;
+  isPlaying.value = false;
+};
 
 const toggleDropdown = (trackId) => {
-  showDropdown.value = showDropdown.value === trackId ? null : trackId
-}
+  showDropdown.value = showDropdown.value === trackId ? null : trackId;
+};
 </script>
 
 <template>
@@ -186,7 +187,6 @@ const toggleDropdown = (trackId) => {
       :message="`Are you sure you want to delete ${trackName}?`"
       @confirm="confirmDelete"
       @cancel="showDelete = false"
-      :playlistId="route.params"
     />
   </teleport>
 </template>

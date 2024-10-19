@@ -1,79 +1,97 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import Header from './Header.vue'
-import { fetchProfileFromStorage } from '../stores/login'
-import { useRouter } from 'vue-router'
-import { useSongStore } from '@/stores/song'
-import EditMySong from './EditMySong.vue'
+import { onMounted, ref } from "vue";
+import Header from "./Header.vue";
+import { fetchProfileFromStorage } from "../stores/login";
+import { useRouter } from "vue-router";
+import { useSongStore } from "@/stores/song";
+import EditMySong from "./EditMySong.vue";
+import noteImage from "../assets/note.svg";
+import DeleteModal from "./DeleteModal.vue";
 
-// Importing the default note image
-import noteImage from '../assets/note.svg'
-
-const songStore = useSongStore()
-const router = useRouter()
-const isLoggedIn = ref(false)
-const username = ref('')
-const selectSongId = ref('')
-const currentAudio = ref(null)
-const currentSong = ref(null)
-const showEdit = ref(false)
+const songStore = useSongStore();
+const router = useRouter();
+const isLoggedIn = ref(false);
+const username = ref("");
+const selectSongId = ref("");
+const currentAudio = ref(null);
+const currentSong = ref(null);
+const showEdit = ref(false);
+const showDelete = ref(false);
+const songToDelete = ref("");
 
 onMounted(async () => {
-  const code = localStorage.getItem('code')
-  let localAccessToken = localStorage.getItem('access_token')
-  if (localAccessToken && code) isLoggedIn.value = true
-  const profile = await fetchProfileFromStorage()
+  const code = localStorage.getItem("code");
+  let localAccessToken = localStorage.getItem("access_token");
+  if (localAccessToken && code) isLoggedIn.value = true;
+  const profile = await fetchProfileFromStorage();
   if (profile) {
-    username.value = profile.display_name
+    username.value = profile.display_name;
   }
-  await songStore.setAllSongs()
-})
+  await songStore.setAllSongs();
+});
 
 const toggleAddSong = () => {
-  router.push({ name: 'AddSong' })
-}
+  router.push({ name: "AddSong" });
+};
 
 const closeEditModal = (value) => {
-  showEdit.value = value
-}
+  showEdit.value = value;
+};
 
 const login = () => {
-  router.push({ name: 'login' })
-}
+  router.push({ name: "login" });
+};
 
 const playSong = (song) => {
   if (currentAudio.value) {
-    currentAudio.value.pause()
+    currentAudio.value.pause();
   }
-  console.log(song.musicLink)
+  console.log(song.musicLink);
 
-  // Play music from musicLink
-  currentAudio.value = new Audio(song.musicLink)
+  currentAudio.value = new Audio(song.musicLink);
 
   currentAudio.value.play().catch((error) => {
-    console.error('Error playing audio:', error)
-  })
+    console.error("Error playing audio:", error);
+  });
 
-  currentSong.value = song
-}
+  currentSong.value = song;
+};
 
 const editSongData = (id) => {
-  showEdit.value = true
-  selectSongId.value = id
-}
+  showEdit.value = true;
+  selectSongId.value = id;
+};
+const toggleDelete = (id) => {
+  showDelete.value = true;
+  songToDelete.value = id;
+};
+
+const confirmDelete = async () => {
+  try {
+    await songStore.deleteSong(songToDelete.value);
+    closeDeleteModal();
+  } catch (error) {
+    console.error("Error deleting song:", error);
+  }
+};
+
+const closeDeleteModal = () => {
+  showDelete.value = false; // Hide the modal
+  songToDelete.value = null; // Reset the track
+};
 
 const imageError = (event) => {
-  event.target.src = noteImage
+  event.target.src = noteImage;
   event.target.classList.add(
-    'border-2',
-    'w-14',
-    'h-14',
-    'rounded-lg',
-    'filter',
-    'brightness-0',
-    'invert'
-  )
-}
+    "border-2",
+    "w-14",
+    "h-14",
+    "rounded-lg",
+    "filter",
+    "brightness-0",
+    "invert"
+  );
+};
 </script>
 
 <template>
@@ -184,10 +202,17 @@ const imageError = (event) => {
           <td class="px-4 py-2 text-center text-white">{{ song.artist }}</td>
           <td class="px-4 py-2 text-center">
             <button
-              class="btn btn-secondary"
+              class="btn bg-gradient-to-r from-purple-600 to-purple-800 text-white"
               @click.stop="editSongData(song.id)"
             >
               Edit
+            </button>
+
+            <button
+              class="btn btn-error ml-2 text-white"
+              @click.stop="toggleDelete(song.id)"
+            >
+              Delete
             </button>
           </td>
         </tr>
@@ -199,6 +224,15 @@ const imageError = (event) => {
         v-if="showEdit"
         :songId="selectSongId"
         @closeModal="closeEditModal"
+      />
+    </teleport>
+
+    <teleport to="body">
+      <DeleteModal
+        v-if="showDelete"
+        :message="`Are you sure you want to delete `"
+        @confirm="confirmDelete"
+        @cancel="closeDeleteModal"
       />
     </teleport>
     <RouterView />
