@@ -1,142 +1,129 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
-import Header from './Header.vue'
-import Album from './Album.vue'
-import { usePlaylistStore } from '../stores/playlist'
-import { useAlbumStore } from '../stores/album'
-import { fetchProfileFromStorage, getAccessToken } from '../stores/login'
-import PlayList from './PlayList.vue'
-import DeleteModal from './DeleteModal.vue'
-import { useRouter } from 'vue-router'
-import defaultProfileImage from '../assets/profile.jpeg'
+import { onMounted, ref, watch } from "vue";
+import Header from "./Header.vue";
+import Album from "./Album.vue";
+import { usePlaylistStore } from "../stores/playlist";
+import { useAlbumStore } from "../stores/album";
+import { fetchProfileFromStorage, getAccessToken } from "../stores/login";
+import PlayList from "./PlayList.vue";
+import DeleteModal from "./DeleteModal.vue";
+import { useRouter } from "vue-router";
+import defaultProfileImage from "../assets/profile.jpeg";
+import PlayListDefault from "./PlayListDefault.vue";
 
-const router = useRouter()
-const albumStore = useAlbumStore()
-const playlistStore = usePlaylistStore()
-const accessToken = ref('')
-const searchInput = ref('')
-const albums = ref([])
-const tracks = ref([])
-const isLoggedIn = ref(false)
-const username = ref('')
-const user_id = ref('')
-const token = ref('')
-const userPlaylist = ref({})
-const showDropdown = ref('')
-const selectedPlaylistId = ref('')
-const showDelete = ref(false)
-const profileImage = ref('')
+const router = useRouter();
+const albumStore = useAlbumStore();
+const playlistStore = usePlaylistStore();
+const accessToken = ref("");
+const searchInput = ref("");
+const albums = ref([]);
+const tracks = ref([]);
+const isLoggedIn = ref(false);
+const username = ref("");
+const user_id = ref("");
+const token = ref("");
+const userPlaylist = ref({});
+const showDropdown = ref("");
+const selectedPlaylistId = ref("");
+const showDelete = ref(false);
+const profileImage = ref("");
 
 onMounted(async () => {
-  const code = localStorage.getItem('code')
-  let localAccessToken = localStorage.getItem('access_token')
+  const code = localStorage.getItem("code");
+  let localAccessToken = localStorage.getItem("access_token");
 
   if (localAccessToken) {
-    token.value = localAccessToken
+    token.value = localAccessToken;
   } else if (code) {
-    token.value = await getAccessToken()
-    isLoggedIn.value = true
+    token.value = await getAccessToken();
+    isLoggedIn.value = true;
   }
-  if (code) isLoggedIn.value = true
-  const profile = await fetchProfileFromStorage()
+  if (code) isLoggedIn.value = true;
+  const profile = await fetchProfileFromStorage();
   if (profile) {
     if (profile.images.length > 0) {
-      profileImage.value = profile.images[0].url
+      profileImage.value = profile.images[0].url;
     }
-    username.value = profile.display_name
-    user_id.value = profile.id
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    await playlistStore.getUserPlaylist(user_id.value, token.value)
-    userPlaylist.value = await playlistStore.getPlaylist()
-    console.log(userPlaylist.value)
+    username.value = profile.display_name;
+    user_id.value = profile.id;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    await playlistStore.getUserPlaylist(user_id.value, token.value);
+    userPlaylist.value = await playlistStore.getPlaylist();
   }
 
   //No Login
-  const defaultClientId = '904da645d0e64016ab25cbfc9ce444a4'
-  const defaultClientSecret = '29fc6f15441b451f91885b1b423e5230'
-  await playlistStore.setAccessToken(defaultClientId, defaultClientSecret)
-  accessToken.value = playlistStore.getAccessTokens()
+  const defaultClientId = "904da645d0e64016ab25cbfc9ce444a4";
+  const defaultClientSecret = "29fc6f15441b451f91885b1b423e5230";
+  await playlistStore.setAccessToken(defaultClientId, defaultClientSecret);
+  accessToken.value = playlistStore.getAccessTokens();
   await playlistStore.getTrackByPlaylist(
     accessToken.value,
-    '37i9dQZF1DX812gZSD3Ky1'
-  )
+    "37i9dQZF1DX812gZSD3Ky1"
+  );
 
-  tracks.value = playlistStore.getTracks()
-})
+  tracks.value = playlistStore.getTracks();
+});
 const toggleCreate = () => {
-  router.push({ name: 'create' })
-}
+  router.push({ name: "create" });
+};
 
 const search = async () => {
   if (searchInput.value.trim()) {
     const artist = await albumStore.setArtist(
       accessToken.value,
       searchInput.value
-    )
+    );
 
-    await albumStore.setAlbums(accessToken.value, artist)
-    albums.value = albumStore.getAlbums()
+    await albumStore.setAlbums(accessToken.value, artist);
+    albums.value = albumStore.getAlbums();
   }
-}
+};
 
 const getMyplayList = async (playlistsId) => {
-  router.push({ name: 'playlist', params: { playlistid: playlistsId } })
+  router.push({ name: "playlist", params: { playlistid: playlistsId } });
   const track = await playlistStore.getTrackByPlaylistsIds(
     playlistsId,
     token.value
-  )
-  tracks.value = track
-}
+  );
+  tracks.value = track;
+};
 
 const handleDelete = async (playlistId) => {
   userPlaylist.value = userPlaylist.value.filter(
     (playlist) => playlist.id !== playlistId
-  )
-  userPlaylist.value = await playlistStore.getPlaylist()
-  showDelete.value = false
-}
+  );
+  userPlaylist.value = await playlistStore.getPlaylist();
+  showDelete.value = false;
+};
 
 const toggleDropdown = (userId) => {
-  showDropdown.value = showDropdown.value === userId ? null : userId
-  console.log(showDropdown.value)
-}
+  showDropdown.value = showDropdown.value === userId ? null : userId;
+  console.log(showDropdown.value);
+};
 
 const toggleEdit = async (playlistsId) => {
-  router.push({ name: 'edit', params: { id: playlistsId } })
-}
+  router.push({ name: "edit", params: { id: playlistsId } });
+};
 
 const deleteUser = (playlistsId) => {
-  selectedPlaylistId.value = playlistsId
-  showDelete.value = true
-}
+  selectedPlaylistId.value = playlistsId;
+  showDelete.value = true;
+};
 
 const login = () => {
-  router.push({ name: 'login' })
-}
+  router.push({ name: "login" });
+};
 
 const logout = () => {
-  localStorage.removeItem('access_token')
-  localStorage.removeItem('code')
-  localStorage.removeItem('verifier')
-  isLoggedIn.value = false
-  username.value = ''
-  user_id.value = ''
-  token.value = ''
-  router.push({ name: 'login' })
-}
-
-// watch(
-//   () => router.currentRoute.value.path,
-//   async (newPath, oldPath) => {
-//     if (newPath !== oldPath) {
-//       await new Promise((resolve) => setTimeout(resolve, 100))
-//       userPlaylist.value = await playlistStore.getUserPlaylist(
-//         user_id.value,
-//         token.value
-//       )
-//     }
-//   }
-// )
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("code");
+  localStorage.removeItem("verifier");
+  isLoggedIn.value = false;
+  username.value = "";
+  user_id.value = "";
+  token.value = "";
+  router.push({ name: "login" });
+};
 </script>
 
 <template>
@@ -292,9 +279,9 @@ const logout = () => {
     <Album :albums="albums" />
   </div>
 
-  <!-- <div v-else class="ml-64">
-    <PlayList :tracks="tracks" />
-  </div> -->
+  <div v-else class="ml-64">
+    <PlayListDefault :tracks="tracks" />
+  </div>
 
   <teleport to="body">
     <DeleteModal
