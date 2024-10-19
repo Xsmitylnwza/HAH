@@ -235,19 +235,21 @@ const deletePlaylist = async (access_token, playlist_id) => {
   })
 }
 
-const deleteSong = async (access_token, track_id, uri) => {
-  const response = await fetch(`https://api.spotify.com/v1/playlists/${track_id}/tracks`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + access_token
-    },
-    body : JSON.stringify({tracks : uri})
-  })
+const deleteSong = async (access_token, playlistId, uris) => {
+  const response = await fetch(
+    `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      },
+      body: JSON.stringify({ tracks: uris.map((uri) => ({ uri })) })
+    }
+  )
   const song = await response.json()
   return song
 }
-
 
 const getArtisttopTracks = async (access_token, artistId) => {
   const trackResponse = await fetch(

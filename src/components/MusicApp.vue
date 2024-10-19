@@ -28,7 +28,6 @@ const showDelete = ref(false)
 const profileImage = ref('')
 
 onMounted(async () => {
-  //Login
   const code = localStorage.getItem('code')
   let localAccessToken = localStorage.getItem('access_token')
 
@@ -46,10 +45,10 @@ onMounted(async () => {
     }
     username.value = profile.display_name
     user_id.value = profile.id
-    userPlaylist.value = await playlistStore.getUserPlaylist(
-      user_id.value,
-      token.value
-    )
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    await playlistStore.getUserPlaylist(user_id.value, token.value)
+    userPlaylist.value = await playlistStore.getPlaylist()
+    console.log(userPlaylist.value)
   }
 
   //No Login
@@ -63,7 +62,6 @@ onMounted(async () => {
   )
 
   tracks.value = playlistStore.getTracks()
-  
 })
 const toggleCreate = () => {
   router.push({ name: 'create' })
@@ -82,6 +80,7 @@ const search = async () => {
 }
 
 const getMyplayList = async (playlistsId) => {
+  router.push({ name: 'playlist', params: { playlistid: playlistsId } })
   const track = await playlistStore.getTrackByPlaylistsIds(
     playlistsId,
     token.value
@@ -89,18 +88,17 @@ const getMyplayList = async (playlistsId) => {
   tracks.value = track
 }
 
-const handleDelete = async () => {
-  userPlaylist.value = await playlistStore.getUserPlaylist(
-    user_id.value,
-    token.value
+const handleDelete = async (playlistId) => {
+  userPlaylist.value = userPlaylist.value.filter(
+    (playlist) => playlist.id !== playlistId
   )
+  userPlaylist.value = await playlistStore.getPlaylist()
   showDelete.value = false
 }
 
 const toggleDropdown = (userId) => {
   showDropdown.value = showDropdown.value === userId ? null : userId
-  console.log(showDropdown.value);
-  
+  console.log(showDropdown.value)
 }
 
 const toggleEdit = async (playlistsId) => {
@@ -127,18 +125,18 @@ const logout = () => {
   router.push({ name: 'login' })
 }
 
-watch(
-  () => router.currentRoute.value.path,
-  async (newPath, oldPath) => {
-    if (newPath !== oldPath) {
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      userPlaylist.value = await playlistStore.getUserPlaylist(
-        user_id.value,
-        token.value
-      )
-    }
-  }
-)
+// watch(
+//   () => router.currentRoute.value.path,
+//   async (newPath, oldPath) => {
+//     if (newPath !== oldPath) {
+//       await new Promise((resolve) => setTimeout(resolve, 100))
+//       userPlaylist.value = await playlistStore.getUserPlaylist(
+//         user_id.value,
+//         token.value
+//       )
+//     }
+//   }
+// )
 </script>
 
 <template>
@@ -294,11 +292,9 @@ watch(
     <Album :albums="albums" />
   </div>
 
-  <div v-else class="ml-64">
-    <PlayList :tracks="tracks" 
-     :playlistId="selectedPlaylistId"
-    />
-  </div>
+  <!-- <div v-else class="ml-64">
+    <PlayList :tracks="tracks" />
+  </div> -->
 
   <teleport to="body">
     <DeleteModal

@@ -22,7 +22,7 @@ export const usePlaylistStore = defineStore('playlist', () => {
   }
 
   const getPlaylist = () => {
-    return playlist.value
+    return playlist.value[0]
   }
 
   const getTracks = () => {
@@ -61,6 +61,7 @@ export const usePlaylistStore = defineStore('playlist', () => {
   const getUserPlaylist = async (user_id, accessToken) => {
     try {
       const response = await getUserPlaylists(user_id, accessToken)
+      playlist.value.push(response)
       return response
     } catch (e) {
       console.error(e)
@@ -79,6 +80,9 @@ export const usePlaylistStore = defineStore('playlist', () => {
   const createNewPlaylist = async (accessToken, user_id, newPlayList) => {
     try {
       const response = await createPlaylist(accessToken, user_id, newPlayList)
+      playlist.value[0].unshift(response)
+      console.log(playlist.value)
+
       return response
     } catch (e) {
       console.error(e)
@@ -88,6 +92,16 @@ export const usePlaylistStore = defineStore('playlist', () => {
   const updatePlaylist = async (accessToken, playlistId, newPlayList) => {
     try {
       await editPlaylist(accessToken, playlistId, newPlayList)
+      const playlistIndex = playlist.value[0].findIndex(
+        (playlist) => playlist.id === playlistId
+      )
+      if (playlistIndex !== -1) {
+        playlist.value[0][playlistIndex] = {
+          ...playlist.value[0][playlistIndex],
+          ...newPlayList
+        }
+      }
+      console.log(playlist.value)
     } catch (e) {
       console.error(e)
     }
@@ -96,18 +110,18 @@ export const usePlaylistStore = defineStore('playlist', () => {
   const deletePlaylists = async (accessToken, playlistId) => {
     try {
       await deletePlaylist(accessToken, playlistId)
+      playlist.value[0] = playlist.value[0].filter(
+        (playlist) => playlist.id !== playlistId
+      )
     } catch (e) {
       console.error(e)
     }
   }
 
   const deleteSongFromPlayList = async (accessToken, trackId, uri) => {
-    console.log(trackId);
-    console.log(uri);
     try {
       const response = await deleteSong(accessToken, trackId, uri)
 
-      
       return response
     } catch (e) {
       console.error(e)
