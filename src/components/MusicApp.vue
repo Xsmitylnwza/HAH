@@ -280,7 +280,7 @@ const logout = () => {
     <Album :albums="albums" />
   </div>
 
-  <div v-else class="ml-64">
+  <div v-if="router.currentRoute.value.path === '/music'" class="ml-64">
     <PlayListDefault :tracks="tracks" />
   </div>
 
