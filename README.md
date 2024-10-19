@@ -15,5 +15,5 @@ c# rainlightriot
   fetch spotify api,Login,List album,Search for Artist,CRUD MyPlayList,Play preview of Music
     
  65130500104 นางสาวณัฐนันท์ จิราจารุวัฒน์ (20%)  <br>
-    UX UI design, add song playlist,play pause music, Increase volume. Decrease volume.
+    Add song playlist,play pause music, Increase volume. Decrease volume, fetch spotify api
  
