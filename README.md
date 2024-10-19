@@ -3,7 +3,7 @@
 ## Member
 
  65130500026 ธนวินท์ กีรติเกษมสุข (20%)<br>
-   add playlist
+   edit playlist, delete song from playlist, fetch spotify api
  
  65130500065 นายภูริ ไชยนิคม (20%)<br>
    UX UI design, List playlist
