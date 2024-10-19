@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import Header from "./Header.vue";
 import { fetchProfileFromStorage } from "../stores/login";
 import { useRouter } from "vue-router";
@@ -18,6 +18,7 @@ const currentSong = ref(null);
 const showEdit = ref(false);
 const showDelete = ref(false);
 const songToDelete = ref("");
+const searchInput = ref("");
 
 onMounted(async () => {
   const code = localStorage.getItem("code");
@@ -28,6 +29,15 @@ onMounted(async () => {
     username.value = profile.display_name;
   }
   await songStore.setAllSongs();
+});
+
+const filteredSongs = computed(() => {
+  if (!searchInput.value) {
+    return songStore.songs;
+  }
+  return songStore.songs.filter((song) =>
+    song.musicName.toLowerCase().includes(searchInput.value.toLowerCase())
+  );
 });
 
 const toggleAddSong = () => {
@@ -46,14 +56,10 @@ const playSong = (song) => {
   if (currentAudio.value) {
     currentAudio.value.pause();
   }
-  console.log(song.musicLink);
-
   currentAudio.value = new Audio(song.musicLink);
-
   currentAudio.value.play().catch((error) => {
     console.error("Error playing audio:", error);
   });
-
   currentSong.value = song;
 };
 
@@ -61,6 +67,7 @@ const editSongData = (id) => {
   showEdit.value = true;
   selectSongId.value = id;
 };
+
 const toggleDelete = (id) => {
   showDelete.value = true;
   songToDelete.value = id;
@@ -76,8 +83,8 @@ const confirmDelete = async () => {
 };
 
 const closeDeleteModal = () => {
-  showDelete.value = false; // Hide the modal
-  songToDelete.value = null; // Reset the track
+  showDelete.value = false;
+  songToDelete.value = null;
 };
 
 const imageError = (event) => {
@@ -106,7 +113,6 @@ const imageError = (event) => {
               v-model="searchInput"
               placeholder="Search for a music"
               class="w-full pl-10 pr-4 py-4 rounded-3xl border border-gray-300 text-lg shadow-md focus:outline-none focus:ring focus:ring-blue-300"
-              @input="search"
             />
             <img
               alt="Search icon"
@@ -175,8 +181,9 @@ const imageError = (event) => {
         </tr>
       </thead>
       <tbody>
+        <!-- ใช้ filteredSongs ในการแสดงผลเพลง -->
         <tr
-          v-for="song in songStore.songs"
+          v-for="song in filteredSongs"
           :key="song.id"
           class="hover:bg-gray-800 transition duration-300 cursor-pointer"
           @click="playSong(song)"
