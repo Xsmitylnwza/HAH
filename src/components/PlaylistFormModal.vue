@@ -43,7 +43,7 @@ onMounted(async () => {
   }
 })
 
-const createOrEditPlaylist = () => {
+const createOrEditPlaylist = async () => {
   if (newPlaylistName.value) {
     newPlayList.value = {
       name: newPlaylistName.value,
@@ -52,11 +52,18 @@ const createOrEditPlaylist = () => {
     }
 
     if (mode === 'edit') {
-      playlistStore.updatePlaylist(token, route.params.id, newPlayList.value)
+      await playlistStore.updatePlaylist(
+        token,
+        route.params.id,
+        newPlayList.value
+      )
     } else {
-      playlistStore.createNewPlaylist(token, user_id.value, newPlayList.value)
+      await playlistStore.createNewPlaylist(
+        token,
+        user_id.value,
+        newPlayList.value
+      )
     }
-
     newPlaylistName.value = ''
     playlistDescription.value = ''
     playlistsPublic.value = false
