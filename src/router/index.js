@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import LoginModal from "../components/LoginModal.vue";
 import MusicApp from "../components/MusicApp.vue";
 import PlaylistFormModal from "../components/PlaylistFormModal.vue";
-import createMySong from "../components/CreateMySong.vue";
+import createMySong from "../components/createMySong.vue";
 import MySong from "../components/MySong.vue";
 import EditMySong from "@/components/EditMySong.vue";
 import PlayList from "@/components/PlayList.vue";

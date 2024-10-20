@@ -1,46 +1,46 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useSongStore } from '../stores/song'
-import { fetchProfileFromStorage } from '../stores/login'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useSongStore } from "../stores/song";
+import { fetchProfileFromStorage } from "../stores/login";
 
-const router = useRouter()
-const songStore = useSongStore()
-const user_id = ref('')
+const router = useRouter();
+const songStore = useSongStore();
+const user_id = ref("");
 
 // ลดฟิลด์ใน newSong ให้เหลือเฉพาะที่ต้องการ
 const newSong = ref({
   albumCover: null, // เพิ่มฟิลด์สำหรับรูปปกเพลง
-  artist: '',
-  musicName: '',
-  musicDescription: '',
-  musicLink: '' // เพิ่มฟิลด์สำหรับลิงก์เพลงแทนไฟล์
-})
+  artist: "",
+  musicName: "",
+  musicDescription: "",
+  musicLink: "", // เพิ่มฟิลด์สำหรับลิงก์เพลงแทนไฟล์
+});
 
 onMounted(async () => {
-  const profile = await fetchProfileFromStorage()
+  const profile = await fetchProfileFromStorage();
   if (profile) {
-    user_id.value = profile.id
+    user_id.value = profile.id;
   }
-})
+});
 
 const createSong = async () => {
-  const song = await songStore.addNewSong(newSong.value)
-  console.log(song)
-  closeModal()
-}
+  const song = await songStore.addNewSong(newSong.value);
+  console.log(song);
+  closeModal();
+};
 
 const closeModal = () => {
-  router.push({ name: 'mysong' })
-}
+  router.push({ name: "mysong" });
+};
 
 // เพิ่มฟังก์ชันสำหรับเลือกและแสดงรูปปกเพลง
 const handleCoverSelect = (files) => {
   if (files.length > 0) {
-    const cover = URL.createObjectURL(files[0])
-    newSong.value.albumCover = cover
+    const cover = URL.createObjectURL(files[0]);
+    newSong.value.albumCover = cover;
   }
-}
+};
 </script>
 
 <template>
@@ -52,7 +52,7 @@ const handleCoverSelect = (files) => {
     >
       <!-- ส่วนของรูปปกเพลงใหญ่ทางซ้าย -->
       <div class="w-1/2">
-        <label class="block mb-2 font-bold">รูปปกเพลง</label>
+        <label class="block mb-2 font-bold">Music cover</label>
         <div class="aspect-w-1 aspect-h-1">
           <img
             v-if="newSong.albumCover"
@@ -64,7 +64,7 @@ const handleCoverSelect = (files) => {
             v-else
             class="bg-gray-100 flex justify-center items-center w-full h-full rounded-lg border border-gray-300"
           >
-            <span class="text-gray-500">เลือกรูปปก</span>
+            <span class="text-gray-500">Choose Cover</span>
           </div>
         </div>
 
@@ -79,55 +79,62 @@ const handleCoverSelect = (files) => {
 
       <!-- ฟอร์มกรอกข้อมูลทางขวา -->
       <div class="w-1/2 space-y-4">
-        <h2 class="text-2xl font-bold mb-4">เพิ่มเพลงใหม่</h2>
+        <h2 class="text-2xl font-bold mb-4">Add Music</h2>
 
-        <!-- Input for music name -->
-        <input
-          v-model="newSong.musicName"
-          type="text"
-          class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-          placeholder="ชื่อเพลง"
-        />
+        <div>
+          <label class="text-gray-500">Music name</label>
+          <input
+            v-model="newSong.musicName"
+            type="text"
+            class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            placeholder="Music name"
+          />
+        </div>
 
-        <!-- Input for artist name -->
-        <input
-          v-model="newSong.artist"
-          type="text"
-          class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-          placeholder="ชื่อศิลปิน"
-        />
+        <div>
+          <label class="text-gray-500">Artist</label>
+          <input
+            v-model="newSong.artist"
+            type="text"
+            class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            placeholder="Artist"
+          />
+        </div>
 
-        <!-- Input for music description -->
-        <input
+        <div>
+          <label class="text-gray-500">Music Description</label>
+          <input
           v-model="newSong.musicDescription"
           type="text"
           class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-          placeholder="คำอธิบายเพลง"
+          placeholder="Music Description"
         />
-
-        <!-- Input for music link -->
-        <input
+        </div>
+        
+        <div>
+          <label class="text-gray-500">Music Link</label>
+          <input
           v-model="newSong.musicLink"
           type="text"
           class="w-full p-3 mb-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-          placeholder="ลิงก์เพลง"
+          placeholder="Music Link"
         />
+        </div>
+        
 
         <div class="flex justify-end space-x-2">
-          <!-- Submit button in Thai -->
           <button
             @click="createSong"
             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
-            เพิ่มเพลง
+            add
           </button>
-
-          <!-- Cancel button in Thai -->
+          
           <button
             @click="closeModal"
             class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
           >
-            ยกเลิก
+            cancel
           </button>
         </div>
       </div>

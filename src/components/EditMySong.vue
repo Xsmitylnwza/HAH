@@ -67,7 +67,7 @@ const fetchSong = async () => {
       class="bg-white text-black p-6 rounded-lg shadow-lg w-full max-w-4xl flex space-x-6"
     >
       <div class="w-1/2">
-        <label class="block mb-2 font-bold">รูปปกเพลง</label>
+        <label class="block mb-2 font-bold">Music cover</label>
         <div class="aspect-w-1 aspect-h-1">
           <img
             v-if="form.albumCover"
@@ -79,7 +79,7 @@ const fetchSong = async () => {
             v-else
             class="bg-gray-100 flex justify-center items-center w-full h-full rounded-lg border border-gray-300"
           >
-            <span class="text-gray-500">เลือกรูปปก</span>
+            <span class="text-gray-500">Choose Cover</span>
           </div>
         </div>
         <input
@@ -91,35 +91,35 @@ const fetchSong = async () => {
       </div>
 
       <div class="w-1/2">
-        <h2 class="text-2xl font-bold mb-4">แก้ไขเพลง</h2>
+        <h2 class="text-2xl font-bold mb-4">Edit music</h2>
 
         <div>
-          <label class="text-gray-500">ชื่อเพลง</label>
+          <label class="text-gray-500">Music name</label>
           <input
             v-model="form.musicName"
             type="text"
             class="w-full p-3 mb-4 border border-gray-300 text-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="ชื่อเพลง"
+            placeholder="Music name"
           />
         </div>
 
         <div>
-          <label class="text-gray-500">ชื่อศิลปิน</label>
+          <label class="text-gray-500">Artist</label>
           <input
             v-model="form.artist"
             type="text"
             class="w-full p-3 mb-4 border border-gray-300 text-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="ชื่อศิลปิน"
+            placeholder="Artist"
           />
         </div>
 
         <div>
-          <label class="text-gray-500">คำอธิบายเพลง</label>
+          <label class="text-gray-500">Music Description</label>
           <input
             v-model="form.musicDescription"
             type="text"
             class="w-full p-3 mb-4 border border-gray-300 text-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="คำอธิบายเพลง"
+            placeholder="Music Description"
           />
         </div>
 
@@ -128,14 +128,14 @@ const fetchSong = async () => {
             @click="handleSubmit"
             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
-            บันทึก
+            save
           </button>
 
           <button
             @click="sendCloseModal"
             class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
           >
-            ยกเลิก
+            cancel
           </button>
         </div>
       </div>
