@@ -8,8 +8,7 @@ import {
   createPlaylist,
   editPlaylist,
   deletePlaylist,
-  deleteSong,
-  addItemToPlayList
+  deleteSong
 } from '../lib/fetchUtils'
 import { ref } from 'vue'
 
@@ -162,8 +161,7 @@ export const usePlaylistStore = defineStore('playlist', () => {
     createNewPlaylist,
     updatePlaylist,
     deletePlaylists,
-    deleteSongFromPlayList,
-    addNewItemToPlayList
+    deleteSongFromPlayList
   }
 })
 

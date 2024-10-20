@@ -183,6 +183,7 @@ const getTrackByPlaylistsId = async (playlistsId, access_token) => {
   return tracksData
 }
 
+
 const getTrack = async (access_token, id) => {
   const albumResponse = await fetch(
     `https://api.spotify.com/v1/albums/${id}/tracks`,
@@ -342,4 +343,5 @@ export {
   getArtisttopTracks,
   deleteSong,
   addItemToPlayList
+
 }
