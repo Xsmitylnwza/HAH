@@ -85,6 +85,7 @@ const resetPlayer = () => {
 
 onMounted(() => {
   music.value.play()
+
   if (music.value) {
     music.value.addEventListener('timeupdate', () => {
       currentTime.value = music.value.currentTime

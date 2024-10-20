@@ -8,7 +8,8 @@ import {
   createPlaylist,
   editPlaylist,
   deletePlaylist,
-  deleteSong
+  deleteSong,
+  addItemToPlayList
 } from '../lib/fetchUtils'
 import { ref } from 'vue'
 
@@ -49,7 +50,6 @@ export const usePlaylistStore = defineStore('playlist', () => {
   }
 
   const getTrackById = async (accessToken, id) => {
-    // Renamed to avoid conflict
     try {
       const response = await fetchTrack(accessToken, id)
       return response
@@ -91,17 +91,9 @@ export const usePlaylistStore = defineStore('playlist', () => {
     }
   }
 
-  const addNewItemToPlayList = async (
-    accessToken,
-    playlistId,
-    uri,
-    position
-  ) => {
+  const addNewItemToPlayList = async (accessToken, playlistId, uri) => {
     try {
       const response = await addItemToPlayList(accessToken, playlistId, uri)
-      console.log('Track added successfully:', response)
-      console.log(playlistId, uri, position)
-
       return response
     } catch (e) {
       console.error('Error in addNewItemToPlayList:', e)
@@ -161,7 +153,8 @@ export const usePlaylistStore = defineStore('playlist', () => {
     createNewPlaylist,
     updatePlaylist,
     deletePlaylists,
-    deleteSongFromPlayList
+    deleteSongFromPlayList,
+    addNewItemToPlayList
   }
 })
 
