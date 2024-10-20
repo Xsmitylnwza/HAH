@@ -90,16 +90,34 @@ export const usePlaylistStore = defineStore('playlist', () => {
       console.error(e)
     }
   }
-
-  const addNewItemToPlayList = async (accessToken, playlistId, uri, position) => {
-    try {
-      const response = await addItemToPlayList(accessToken, playlistId, uri, position)
-      songsInPlayList.value.unshift(response)
-      return response
-    } catch (e) {
-      console.error(e)
+// playlist.js
+const addNewItemToPlayList = async (accessToken, playlistId, uri, position) => {
+  try {
+    const response = await addItemToPlayList(accessToken, playlistId, uri, position);
+    
+    // Check for errors in the response
+    if (response.error) {
+      throw new Error(response.error.message);
     }
+
+    // If response is successful, add the track to songsInPlayList
+    songsInPlayList.value.unshift(response);
+    console.log('Track added successfully:', response);
+    console.log(playlistId, uri, position);
+    
+    return response;
+  } catch (e) {
+    console.error('Error in addNewItemToPlayList:', e);
+    
+    // Notify the user about the error
+    alert(`Failed to add track: ${e.message}`);
+    throw e; // Rethrow to allow handling in the calling function
   }
+};
+
+  
+  
+  
 
   const updatePlaylist = async (accessToken, playlistId, newPlayList) => {
     try {

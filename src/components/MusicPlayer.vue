@@ -1,3 +1,4 @@
+<!-- MusicPlayer.vue -->
 <script setup>
 import { ref, defineProps, watch, onMounted } from 'vue'
 import Modal from './AddMusicPlaylist.vue'
@@ -155,7 +156,8 @@ const openModal = () => {
       </div>
     </div>
   </div>
-  <Modal v-if="showModal" @close="showModal = false" />
+  <Modal v-if="showModal" @close="showModal = false" :previewUrl="previewUrl"
+  :currentTrack="currentTrack" album: Object/>
 </template>
 
 <style scoped>

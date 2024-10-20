@@ -183,6 +183,7 @@ const getTrackByPlaylistsId = async (playlistsId, access_token) => {
   const playlistAlbums = tracksData.items.map((item) => item.track.album);
   return playlistAlbums;
 };
+
 const getTrack = async (access_token, id) => {
   const albumResponse = await fetch(
     `https://api.spotify.com/v1/albums/${id}/tracks`,
@@ -213,13 +214,13 @@ const createPlaylist = async (access_token, user_id, newPlayList) => {
   const playlist = await response.json();
   return playlist;
 };
-
+//fetch.js
 const addItemToPlayList = async (access_token, playlist_id, uris, position) => {
   const createTracksArray = (uris) => {
     if (Array.isArray(uris)) {
-      return uris;
+      return uris; // Accepts uris as an array directly
     } else if (typeof uris === "string") {
-      return [uris];
+      return [uris]; // Convert string to array
     } else {
       throw new Error("Invalid URI format");
     }
@@ -233,10 +234,20 @@ const addItemToPlayList = async (access_token, playlist_id, uris, position) => {
     return;
   }
 
+  // Validate position if provided
+  if (position !== undefined && (typeof position !== 'number' || position < 0)) {
+    console.error("Position must be a non-negative integer");
+    return;
+  }
+
+  // Constructing the request body
   const body = {
     uris: urisArray,
-    ...(position !== undefined && { position })
+    ...(position !== undefined ? { position } : {})
   };
+
+  console.log("Request Body:", body); // Log the body before the fetch
+  console.log("Access Token:", access_token); // Log the access token
 
   const response = await fetch(
     `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
@@ -249,9 +260,17 @@ const addItemToPlayList = async (access_token, playlist_id, uris, position) => {
       body: JSON.stringify(body),
     }
   );
-  const result = await response.json();
-  return result;
+
+  // Check for response errors
+  if (!response.ok) {
+    const error = await response.json();
+    console.error("Error Response:", error); // Log the error response
+    throw new Error(`Failed to add tracks: ${error.message}`);
+  }
+
+  return await response.json();
 };
+
 
 
 const editPlaylist = async (access_token, playlist_id, newPlayList) => {
