@@ -26,7 +26,6 @@ onMounted(async () => {
 
 const createSong = async () => {
   const song = await songStore.addNewSong(newSong.value)
-  console.log(song)
   closeModal()
 }
 

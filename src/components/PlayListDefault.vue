@@ -1,61 +1,49 @@
 <script setup>
-import { usePlaylistStore } from "../stores/playlist";
-import { ref, watch, onMounted } from "vue";
-import MusicPlayer from "./MusicPlayer.vue";
-import { useRoute } from "vue-router";
-import DeleteModal from "./DeleteModal.vue";
+import { usePlaylistStore } from '../stores/playlist'
+import { ref } from 'vue'
+import MusicPlayer from './MusicPlayer.vue'
 
 const props = defineProps({
-  tracks: Array,
-});
+  tracks: Array
+})
 
-const playlistStore = usePlaylistStore();
-let accessToken = localStorage.getItem("access_token");
-
-const route = useRoute();
-const previewUrl = ref("");
-const currentTrack = ref(null);
-const currentTime = ref(0);
-const audioDuration = ref(0);
-const isPlaying = ref(false);
-const showDropdown = ref("");
-const showDelete = ref(false);
-const uri = ref([]);
-const trackId = ref("");
-const trackName = ref("");
+const playlistStore = usePlaylistStore()
+let accessToken = localStorage.getItem('access_token')
+const previewUrl = ref('')
+const currentTrack = ref(null)
+const currentTime = ref(0)
+const audioDuration = ref(0)
+const isPlaying = ref(false)
+const trackId = ref('')
 
 const click = async (track) => {
   try {
-    const tracks = await playlistStore.getTrackById(accessToken, track.id);
+    const tracks = await playlistStore.getTrackById(accessToken, track.id)
     if (tracks && tracks.length > 0) {
-      const firstTrack = tracks[0];
+      const firstTrack = tracks[0]
       if (firstTrack.preview_url) {
-        previewUrl.value = firstTrack.preview_url;
-        trackId.value = firstTrack.id;
-        currentTrack.value = track;
+        previewUrl.value = firstTrack.preview_url
+        trackId.value = firstTrack.id
+        currentTrack.value = track
       } else {
-        resetPlayer();
+        resetPlayer()
       }
     } else {
-      resetPlayer();
+      resetPlayer()
     }
   } catch (error) {
-    console.error("Error fetching track:", error);
-    resetPlayer();
+    console.error('Error fetching track:', error)
+    resetPlayer()
   }
-};
+}
 
 const resetPlayer = () => {
-  previewUrl.value = null;
-  currentTrack.value = null;
-  currentTime.value = 0;
-  audioDuration.value = 0;
-  isPlaying.value = false;
-};
-
-const toggleDropdown = (trackId) => {
-  showDropdown.value = showDropdown.value === trackId ? null : trackId;
-};
+  previewUrl.value = null
+  currentTrack.value = null
+  currentTime.value = 0
+  audioDuration.value = 0
+  isPlaying.value = false
+}
 </script>
 
 <template>

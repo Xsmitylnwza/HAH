@@ -1,7 +1,9 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import Header from './Header.vue'
+import Album from './Album.vue'
 import { usePlaylistStore } from '../stores/playlist'
+import { useAlbumStore } from '../stores/album'
 import { fetchProfileFromStorage, getAccessToken } from '../stores/login'
 import DeleteModal from './DeleteModal.vue'
 import { useRouter } from 'vue-router'
@@ -9,9 +11,11 @@ import defaultProfileImage from '../assets/profile.jpeg'
 import PlayListDefault from './PlayListDefault.vue'
 
 const router = useRouter()
+const albumStore = useAlbumStore()
 const playlistStore = usePlaylistStore()
 const accessToken = ref('')
 const searchInput = ref('')
+const albums = ref([])
 const tracks = ref([])
 const isLoggedIn = ref(false)
 const username = ref('')
@@ -41,6 +45,7 @@ onMounted(async () => {
     }
     username.value = profile.display_name
     user_id.value = profile.id
+    await new Promise((resolve) => setTimeout(resolve, 100))
     await playlistStore.getUserPlaylist(user_id.value, token.value)
     userPlaylist.value = await playlistStore.getPlaylist()
   }
@@ -54,16 +59,21 @@ onMounted(async () => {
     accessToken.value,
     '37i9dQZF1DX812gZSD3Ky1'
   )
-  if (router.currentRoute.value.path === '/music') {
-    tracks.value = playlistStore.getTracks()
-  }
+  tracks.value = playlistStore.getTracks()
 })
 const toggleCreate = () => {
   router.push({ name: 'create' })
 }
 
 const search = async () => {
-  router.push({ name: 'search' })
+  if (searchInput.value.trim()) {
+    const artist = await albumStore.setArtist(
+      accessToken.value,
+      searchInput.value
+    )
+    await albumStore.setAlbums(accessToken.value, artist)
+    albums.value = albumStore.getAlbums()
+  }
 }
 
 const getMyplayList = async (playlistsId) => {
@@ -123,8 +133,8 @@ const logout = () => {
               type="text"
               v-model="searchInput"
               placeholder="Search for an artist"
-              class="w-full pl-10 py-2 rounded-3xl border border-gray-300 text-lg shadow-md focus:outline-none cursor-pointer"
-              @click="search"
+              class="w-full pl-10 py-2 rounded-3xl border border-gray-300 text-lg shadow-md focus:outline-none"
+              @input="search"
             />
             <img
               alt="Search icon"
@@ -261,7 +271,11 @@ const logout = () => {
     </div>
   </div>
 
-  <div v-if="router.currentRoute.value.path === '/music'" class="ml-64">
+  <div v-if="searchInput && albums.length > 0" class="ml-64">
+    <Album :albums="albums" />
+  </div>
+
+  <div v-if="!searchInput" class="ml-64">
     <PlayListDefault :tracks="tracks" />
   </div>
 

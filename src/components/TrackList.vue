@@ -13,8 +13,6 @@ let currentTrack = ref(null)
 const click = (track) => {
   previewUrl.value = track.preview_url // กำหนด URL ของเพลงที่ถูกคลิก
   currentTrack.value = track // กำหนด track ที่ถูกเลือก
-  console.log('click', track);
-  
 }
 </script>
 

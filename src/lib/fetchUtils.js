@@ -1,342 +1,326 @@
 async function getItems(url) {
   try {
-    const data = await fetch(url);
-    const items = await data.json();
-    return items;
+    const data = await fetch(url)
+    const items = await data.json()
+    return items
   } catch (error) {
-    console.log(`error: ${error}`);
-    throw new Error(error);
+    console.log(`error: ${error}`)
+    throw new Error(error)
   }
 }
 
 async function getItemById(url, id) {
   try {
-    const data = await fetch(`${url}/${id}`);
-    const item = await data.json();
-    return item;
+    const data = await fetch(`${url}/${id}`)
+    const item = await data.json()
+    return item
   } catch (error) {
-    console.log(`error: ${error}`);
-    if (data.status === 404) return undefined;
-    throw new Error(error);
+    console.log(`error: ${error}`)
+    if (data.status === 404) return undefined
+    throw new Error(error)
   }
 }
 
 async function deleteItemById(url, id) {
-  console.log(`${url}/${id}`);
+  console.log(`${url}/${id}`)
 
   try {
     const res = await fetch(`${url}/${id}`, {
-      method: "DELETE",
-    });
-    return res.status;
+      method: 'DELETE'
+    })
+    return res.status
   } catch (error) {
-    console.log(`error: ${error}`);
-    throw new Error(error);
+    console.log(`error: ${error}`)
+    throw new Error(error)
   }
 }
 
 async function addItem(url, newItem) {
-  console.log(newItem);
+  console.log(newItem)
 
   try {
     const res = await fetch(url, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "content-type": "application/json",
+        'content-type': 'application/json'
       },
-      body: JSON.stringify(newItem),
-    });
-    const addedItem = await res.json();
-    return addedItem;
+      body: JSON.stringify(newItem)
+    })
+    const addedItem = await res.json()
+    return addedItem
   } catch (error) {
-    console.log(`error: ${error}`);
-    throw new Error(error);
+    console.log(`error: ${error}`)
+    throw new Error(error)
   }
 }
 
 async function editItem(url, id, editItem) {
   try {
     const res = await fetch(`${url}/${id}`, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
-        "content-type": "application/json",
+        'content-type': 'application/json'
       },
       body: JSON.stringify({
-        ...editItem,
-      }),
-    });
-    const editedItem = await res.json();
-    return editedItem;
+        ...editItem
+      })
+    })
+    const editedItem = await res.json()
+    return editedItem
   } catch (error) {
-    console.log(`error: ${error}`);
-    throw new Error(error);
+    console.log(`error: ${error}`)
+    throw new Error(error)
   }
 }
 
 async function login(url, username, password) {
   try {
     const res = await fetch(url, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const users = await res.json();
+        'Content-Type': 'application/json'
+      }
+    })
+    const users = await res.json()
     const user = users.find(
       (user) => user.username === username && user.password === password
-    );
+    )
 
-    return user;
+    return user
   } catch (error) {
-    console.log(`error: ${error}`);
-    throw new Error(error);
+    console.log(`error: ${error}`)
+    throw new Error(error)
   }
 }
 
 const getAccessToken = async (clientId, clientSecret) => {
-  const response = await fetch("https://accounts.spotify.com/api/token", {
-    method: "POST",
+  const response = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+      'Content-Type': 'application/x-www-form-urlencoded'
     },
     body:
-      "grant_type=client_credentials&client_id=" +
+      'grant_type=client_credentials&client_id=' +
       clientId +
-      "&client_secret=" +
-      clientSecret,
-  });
-  const data = await response.json();
-  return data.access_token;
-};
+      '&client_secret=' +
+      clientSecret
+  })
+  const data = await response.json()
+  return data.access_token
+}
 
 const getPlayList = async (access_token, playlist) => {
   const playlistResponse = await fetch(
     `https://api.spotify.com/v1/playlists/${playlist}`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + access_token,
-      },
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
     }
-  );
-  const playlistData = await playlistResponse.json();
-  return playlistData;
-};
+  )
+  const playlistData = await playlistResponse.json()
+  return playlistData
+}
 
 const getArtist = async (access_token, artist) => {
   const artistResponse = await fetch(
     `https://api.spotify.com/v1/search?q=${artist}&type=artist`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + access_token,
-      },
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
     }
-  );
-  const artistData = await artistResponse.json();
-  return artistData;
-};
+  )
+  const artistData = await artistResponse.json()
+  return artistData
+}
 const getAlbumfromArtist = async (access_token, artist) => {
   const returnAlbums = await fetch(
     `https://api.spotify.com/v1/artists/${artist.artists.items[0].id}/albums?include_groups=album&limit=50`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + access_token,
-      },
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
     }
-  );
-  const albumData = await returnAlbums.json();
-  return albumData.items;
-};
+  )
+  const albumData = await returnAlbums.json()
+  return albumData.items
+}
 
 const getUserPlaylists = async (user_id, access_token) => {
   const response = await fetch(
     `https://api.spotify.com/v1/users/${user_id}/playlists`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + access_token,
-      },
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
     }
-  );
-  const playlists = await response.json();
-  return playlists.items;
-};
+  )
+  const playlists = await response.json()
+  return playlists.items
+}
 
 const getTrackByPlaylistsId = async (playlistsId, access_token) => {
   const trackResponse = await fetch(
     `https://api.spotify.com/v1/playlists/${playlistsId}/tracks`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + access_token,
-      },
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
     }
-  );
-  const tracksData = await trackResponse.json();
-  const playlistAlbums = tracksData.items.map((item) => item.track.album);
-  return playlistAlbums;
-};
+  )
+  const tracksData = await trackResponse.json()
+  return tracksData
+}
 
 const getTrack = async (access_token, id) => {
   const albumResponse = await fetch(
     `https://api.spotify.com/v1/albums/${id}/tracks`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + access_token,
-      },
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
     }
-  );
+  )
 
-  const albumData = await albumResponse.json();
-  return albumData.items;
-};
+  const albumData = await albumResponse.json()
+  return albumData.items
+}
 const createPlaylist = async (access_token, user_id, newPlayList) => {
   const response = await fetch(
     `https://api.spotify.com/v1/users/${user_id}/playlists`,
     {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + access_token,
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
       },
-      body: JSON.stringify(newPlayList),
+      body: JSON.stringify(newPlayList)
     }
-  );
-  const playlist = await response.json();
-  return playlist;
-};
-//fetch.js
-const addItemToPlayList = async (access_token, playlist_id, uris, position) => {
+  )
+  const playlist = await response.json()
+  return playlist
+}
+
+const addItemToPlayList = async (access_token, playlist_id, uris) => {
   const createTracksArray = (uris) => {
     if (Array.isArray(uris)) {
-      return uris; // Accepts uris as an array directly
-    } else if (typeof uris === "string") {
-      return [uris]; // Convert string to array
+      return uris
+    } else if (typeof uris === 'string') {
+      return [uris]
     } else {
-      throw new Error("Invalid URI format");
+      throw new Error('Invalid URI format')
     }
-  };
+  }
 
-  let urisArray;
+  let urisArray
   try {
-    urisArray = createTracksArray(uris);
+    urisArray = createTracksArray(uris)
   } catch (error) {
-    console.error(error.message);
-    return;
+    console.error(error.message)
+    return
   }
 
-  // Validate position if provided
-  if (position !== undefined && (typeof position !== 'number' || position < 0)) {
-    console.error("Position must be a non-negative integer");
-    return;
-  }
-
-  // Constructing the request body
   const body = {
-    uris: urisArray,
-    ...(position !== undefined ? { position } : {})
-  };
-
-  console.log("Request Body:", body); // Log the body before the fetch
-  console.log("Access Token:", access_token); // Log the access token
+    uris: urisArray
+  }
 
   const response = await fetch(
     `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
     {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${access_token}`,
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${access_token}`
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(body)
     }
-  );
-
-  // Check for response errors
+  )
   if (!response.ok) {
-    const error = await response.json();
-    console.error("Error Response:", error); // Log the error response
-    throw new Error(`Failed to add tracks: ${error.message}`);
+    const error = await response.json()
+    console.error('Error Response:', error)
+    throw new Error(`Failed to add tracks: ${error.message}`)
   }
 
-  return await response.json();
-};
-
-
+  return await response.json()
+}
 
 const editPlaylist = async (access_token, playlist_id, newPlayList) => {
   await fetch(`https://api.spotify.com/v1/playlists/${playlist_id}`, {
-    method: "PUT",
+    method: 'PUT',
     headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + access_token,
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + access_token
     },
-    body: JSON.stringify(newPlayList),
-  });
-};
+    body: JSON.stringify(newPlayList)
+  })
+}
 
 const deletePlaylist = async (access_token, playlist_id) => {
   await fetch(`https://api.spotify.com/v1/playlists/${playlist_id}/followers`, {
-    method: "DELETE",
+    method: 'DELETE',
     headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + access_token,
-    },
-  });
-};
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + access_token
+    }
+  })
+}
 
 const deleteSong = async (access_token, playlistId, uris) => {
   const createTracksArray = (uris) => {
     if (Array.isArray(uris)) {
-      return uris.map((uri) => ({ uri }));
-    } else if (typeof uris === "string") {
-      return [{ uri: uris }];
+      return uris.map((uri) => ({ uri }))
+    } else if (typeof uris === 'string') {
+      return [{ uri: uris }]
     } else {
-      throw new Error("Invalid URI format");
+      throw new Error('Invalid URI format')
     }
-  };
-  let tracks;
+  }
+  let tracks
   try {
-    tracks = createTracksArray(uris);
+    tracks = createTracksArray(uris)
   } catch (error) {
-    console.error(error.message);
-    return;
+    console.error(error.message)
+    return
   }
 
   // เรียก API เพื่อ delete songs
   await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-    method: "DELETE",
+    method: 'DELETE',
     headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + access_token,
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + access_token
     },
-    body: JSON.stringify({ tracks }),
-  });
-};
+    body: JSON.stringify({ tracks })
+  })
+}
 
 const getArtisttopTracks = async (access_token, artistId) => {
   const trackResponse = await fetch(
     `https://api.spotify.com/v1/artists/${artistId}/top-tracks`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + access_token,
-      },
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + access_token
+      }
     }
-  );
-  const trackData = await trackResponse.json();
-  return trackData;
-};
+  )
+  const trackData = await trackResponse.json()
+  return trackData
+}
 
 export {
   getItems,
@@ -357,5 +341,5 @@ export {
   deletePlaylist,
   getArtisttopTracks,
   deleteSong,
-  addItemToPlayList,
-};
+  addItemToPlayList
+}

@@ -17,7 +17,6 @@ export const usePlaylistStore = defineStore('playlist', () => {
   const playlist = ref([])
   const tracks = ref([])
   const accessToken = ref('')
-  const songsInPlayList = ref([])
 
   const getAccessTokens = () => {
     return accessToken.value
@@ -69,11 +68,13 @@ export const usePlaylistStore = defineStore('playlist', () => {
       console.error(e)
     }
   }
-
   const getTrackByPlaylistsIds = async (playlistsId, accessToken) => {
     try {
       const response = await getTrackByPlaylistsId(playlistsId, accessToken)
-      return response
+      const playlist = response.items
+        .filter((item) => item.track)
+        .map((item) => item.track.album)
+      return playlist
     } catch (e) {
       console.error(e)
     }
@@ -90,34 +91,23 @@ export const usePlaylistStore = defineStore('playlist', () => {
       console.error(e)
     }
   }
-// playlist.js
-const addNewItemToPlayList = async (accessToken, playlistId, uri, position) => {
-  try {
-    const response = await addItemToPlayList(accessToken, playlistId, uri, position);
-    
-    // Check for errors in the response
-    if (response.error) {
-      throw new Error(response.error.message);
+
+  const addNewItemToPlayList = async (
+    accessToken,
+    playlistId,
+    uri,
+    position
+  ) => {
+    try {
+      const response = await addItemToPlayList(accessToken, playlistId, uri)
+      console.log('Track added successfully:', response)
+      console.log(playlistId, uri, position)
+
+      return response
+    } catch (e) {
+      console.error('Error in addNewItemToPlayList:', e)
     }
-
-    // If response is successful, add the track to songsInPlayList
-    songsInPlayList.value.unshift(response);
-    console.log('Track added successfully:', response);
-    console.log(playlistId, uri, position);
-    
-    return response;
-  } catch (e) {
-    console.error('Error in addNewItemToPlayList:', e);
-    
-    // Notify the user about the error
-    alert(`Failed to add track: ${e.message}`);
-    throw e; // Rethrow to allow handling in the calling function
   }
-};
-
-  
-  
-  
 
   const updatePlaylist = async (accessToken, playlistId, newPlayList) => {
     try {
@@ -151,7 +141,6 @@ const addNewItemToPlayList = async (accessToken, playlistId, uri, position) => {
   const deleteSongFromPlayList = async (accessToken, trackId, uri) => {
     try {
       const response = await deleteSong(accessToken, trackId, uri)
-
       return response
     } catch (e) {
       console.error(e)
@@ -167,7 +156,7 @@ const addNewItemToPlayList = async (accessToken, playlistId, uri, position) => {
     getTracks,
     setAccessToken,
     getTrackByPlaylist,
-    getTrackById, // Updated reference
+    getTrackById,
     getUserPlaylist,
     getTrackByPlaylistsIds,
     createNewPlaylist,
