@@ -8,6 +8,7 @@ async function getItems(url) {
     throw new Error(error)
   }
 }
+
 async function getItemById(url, id) {
   try {
     const data = await fetch(`${url}/${id}`)
@@ -35,6 +36,8 @@ async function deleteItemById(url, id) {
 }
 
 async function addItem(url, newItem) {
+  console.log(newItem)
+
   try {
     const res = await fetch(url, {
       method: 'POST',
@@ -232,6 +235,20 @@ const deletePlaylist = async (access_token, playlist_id) => {
   })
 }
 
+const deleteSong = async (access_token, track_id, uri) => {
+  const response = await fetch(`https://api.spotify.com/v1/playlists/${track_id}/tracks`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + access_token
+    },
+    body : JSON.stringify({tracks : uri})
+  })
+  const song = await response.json()
+  return song
+}
+
+
 const getArtisttopTracks = async (access_token, artistId) => {
   const trackResponse = await fetch(
     `https://api.spotify.com/v1/artists/${artistId}/top-tracks`,
@@ -264,5 +281,6 @@ export {
   createPlaylist,
   editPlaylist,
   deletePlaylist,
-  getArtisttopTracks
+  getArtisttopTracks,
+  deleteSong
 }

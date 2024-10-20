@@ -4,6 +4,7 @@ import MusicApp from '../components/MusicApp.vue'
 import PlaylistFormModal from '../components/PlaylistFormModal.vue'
 import createMySong from '../components/createMySong.vue'
 import MySong from '../components/MySong.vue'
+import EditMySong from '@/components/EditMySong.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,6 +44,11 @@ const router = createRouter({
           path: '/mysong/add',
           name: 'AddSong',
           component: createMySong
+        },
+        {
+          path: '/mysong/edit',
+          name: 'EditSong',
+          component: EditMySong
         }
       ]
     }
