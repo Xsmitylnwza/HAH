@@ -99,6 +99,10 @@ const imageError = (event) => {
     "invert"
   );
 };
+
+const backToHomePage = () => {
+  router.push({name : "music"})
+}
 </script>
 
 <template>
@@ -152,7 +156,8 @@ const imageError = (event) => {
     class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-lg overflow-y-auto"
   >
     <div class="p-4 flex justify-between items-center">
-      <h2 class="text-3xl font-bold">Rainlight Riot</h2>
+      <h2 class="text-3xl font-bold cursor-pointer"
+      @click="backToHomePage">Rainlight Riot</h2>
     </div>
 
     <div class="flex justify-start mb-6 ml-4">
