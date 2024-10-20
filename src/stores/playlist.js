@@ -67,11 +67,13 @@ export const usePlaylistStore = defineStore('playlist', () => {
       console.error(e)
     }
   }
-
   const getTrackByPlaylistsIds = async (playlistsId, accessToken) => {
     try {
       const response = await getTrackByPlaylistsId(playlistsId, accessToken)
-      return response
+      const playlist = response.items
+        .filter((item) => item.track)
+        .map((item) => item.track.album)
+      return playlist
     } catch (e) {
       console.error(e)
     }
@@ -86,6 +88,23 @@ export const usePlaylistStore = defineStore('playlist', () => {
       return response
     } catch (e) {
       console.error(e)
+    }
+  }
+
+  const addNewItemToPlayList = async (
+    accessToken,
+    playlistId,
+    uri,
+    position
+  ) => {
+    try {
+      const response = await addItemToPlayList(accessToken, playlistId, uri)
+      console.log('Track added successfully:', response)
+      console.log(playlistId, uri, position)
+
+      return response
+    } catch (e) {
+      console.error('Error in addNewItemToPlayList:', e)
     }
   }
 
@@ -121,7 +140,6 @@ export const usePlaylistStore = defineStore('playlist', () => {
   const deleteSongFromPlayList = async (accessToken, trackId, uri) => {
     try {
       const response = await deleteSong(accessToken, trackId, uri)
-
       return response
     } catch (e) {
       console.error(e)
@@ -137,7 +155,7 @@ export const usePlaylistStore = defineStore('playlist', () => {
     getTracks,
     setAccessToken,
     getTrackByPlaylist,
-    getTrackById, // Updated reference
+    getTrackById,
     getUserPlaylist,
     getTrackByPlaylistsIds,
     createNewPlaylist,

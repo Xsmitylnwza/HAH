@@ -25,10 +25,9 @@ onMounted(async () => {
 });
 
 const createSong = async () => {
-  const song = await songStore.addNewSong(newSong.value);
-  console.log(song);
-  closeModal();
-};
+  const song = await songStore.addNewSong(newSong.value)
+  closeModal()
+}
 
 const closeModal = () => {
   router.push({ name: "mysong" });

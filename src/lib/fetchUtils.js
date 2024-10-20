@@ -180,9 +180,10 @@ const getTrackByPlaylistsId = async (playlistsId, access_token) => {
     }
   )
   const tracksData = await trackResponse.json()
-  const playlistAlbums = tracksData.items.map((item) => item.track.album)
-  return playlistAlbums
+  return tracksData
 }
+
+
 const getTrack = async (access_token, id) => {
   const albumResponse = await fetch(
     `https://api.spotify.com/v1/albums/${id}/tracks`,
@@ -212,6 +213,49 @@ const createPlaylist = async (access_token, user_id, newPlayList) => {
   )
   const playlist = await response.json()
   return playlist
+}
+
+const addItemToPlayList = async (access_token, playlist_id, uris) => {
+  const createTracksArray = (uris) => {
+    if (Array.isArray(uris)) {
+      return uris
+    } else if (typeof uris === 'string') {
+      return [uris]
+    } else {
+      throw new Error('Invalid URI format')
+    }
+  }
+
+  let urisArray
+  try {
+    urisArray = createTracksArray(uris)
+  } catch (error) {
+    console.error(error.message)
+    return
+  }
+
+  const body = {
+    uris: urisArray
+  }
+
+  const response = await fetch(
+    `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${access_token}`
+      },
+      body: JSON.stringify(body)
+    }
+  )
+  if (!response.ok) {
+    const error = await response.json()
+    console.error('Error Response:', error)
+    throw new Error(`Failed to add tracks: ${error.message}`)
+  }
+
+  return await response.json()
 }
 
 const editPlaylist = async (access_token, playlist_id, newPlayList) => {
@@ -297,5 +341,7 @@ export {
   editPlaylist,
   deletePlaylist,
   getArtisttopTracks,
-  deleteSong
+  deleteSong,
+  addItemToPlayList
+
 }
