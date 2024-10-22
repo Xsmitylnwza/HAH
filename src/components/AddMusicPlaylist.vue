@@ -1,6 +1,6 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { usePlaylistStore } from '../stores/playlist' // นำเข้า usePlaylistStore
+import { onMounted, ref, computed } from 'vue'
+import { usePlaylistStore } from '../stores/playlist' 
 import { fetchProfileFromStorage } from '../stores/login'
 
 const props = defineProps({
@@ -14,6 +14,16 @@ const user_id = ref('')
 const userPlaylist = ref([])
 const uri = ref('')
 const trackExistsInPlaylist = ref([])
+const searchQuery = ref('')
+
+const filteredPlaylists = computed(() => {
+  if (!searchQuery.value) {
+    return userPlaylist.value
+  }
+  return userPlaylist.value.filter(playlist =>
+    playlist.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+})
 
 const getUserPlaylist = async () => {
   userPlaylist.value = await playlistStore.getUserPlaylist(user_id.value, token)
@@ -63,11 +73,12 @@ onMounted(async () => {
 })
 </script>
 
+
 <template>
   <div
     class="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50"
   >
-    <div class="bg-white text-black p-6 rounded-lg shadow-lg w-full max-w-md">
+    <div class="  text-white p-6 rounded-lg shadow-lg w-full max-w-md bg-gradient-to-r from-gray-800 to-gray-900">
       <div class="flex items-center justify-between">
         <p class="mr-2">Add to playlist</p>
         <img
@@ -77,8 +88,18 @@ onMounted(async () => {
           @click="closeModal"
         />
       </div>
+
+      <div class="mt-4">
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="Search playlist"
+          class="w-full p-2 border border-gray-300 rounded-lg"
+        />
+      </div>
+
       <div
-        v-for="(user, index) in userPlaylist"
+        v-for="(user, index) in filteredPlaylists"
         :key="user.id"
         class="relative flex justify-between items-center mt-2 hover:bg-slate-700 rounded-lg"
       >
@@ -116,5 +137,6 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
 
 <style scoped></style>

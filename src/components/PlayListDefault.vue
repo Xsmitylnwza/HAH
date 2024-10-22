@@ -54,7 +54,7 @@ const resetPlayer = () => {
     <div
       v-for="track in tracks"
       :key="track.id"
-      class="relative bg-[#1e293b] rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105"
+      class="relative bg-[#1e293b] rounded-lg overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer"
       @click="click(track)"
     >
       <img

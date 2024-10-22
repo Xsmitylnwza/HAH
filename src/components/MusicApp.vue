@@ -171,7 +171,7 @@ const logout = () => {
     class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-lg overflow-y-auto"
   >
     <div class="p-4 flex justify-between items-center">
-      <h2 class="text-3xl font-bold">Rainlight Riot</h2>
+      <h2 class="text-3xl font-bold cursor-pointer" @click="router.push({ name : 'music'})">Rainlight Riot</h2>
       <button
         @click="toggleCreate"
         class="flex items-center justify-center transition-transform duration-300 hover:scale-110 rounded-full bg-slate-500 hover:bg-slate-600"

@@ -1,4 +1,3 @@
-<!-- MusicPlayer.vue -->
 <script setup>
 import { ref, defineProps, watch, onMounted } from 'vue'
 import Modal from './AddMusicPlaylist.vue'
@@ -13,8 +12,10 @@ const music = ref(null)
 const isPlaying = ref(true)
 const currentTime = ref(0)
 const audioDuration = ref(0)
-const volume = ref(1)
-const volumeBeforeMute = ref(1)
+
+// Set the default volume to 50% (0.5)
+const volume = ref(0.5)
+const volumeBeforeMute = ref(0.5)
 const isMuted = ref(false)
 const showModal = ref(false)
 
@@ -84,6 +85,11 @@ const resetPlayer = () => {
 }
 
 onMounted(() => {
+  // Set the default volume to 50%
+  if (music.value) {
+    music.value.volume = 0.5
+  }
+
   music.value.play()
 
   if (music.value) {
@@ -105,9 +111,10 @@ onMounted(() => {
 })
 
 const openModal = () => {
-  showModal.value = true // Open the modal
+  showModal.value = true 
 }
 </script>
+
 
 <template>
   <div
@@ -171,7 +178,7 @@ const openModal = () => {
             :max="audioDuration"
             v-model="currentTime"
             @input="seekAudio"
-            class="h-1 bg-gray-700 rounded-full cursor-pointer w-96"
+            class="h-1 bg-gray-700 rounded-full cursor-pointer w-2/5"
           />
           <span
             >{{ Math.floor((audioDuration - currentTime) / 60) }}:{{
@@ -196,7 +203,7 @@ const openModal = () => {
             step="0.01"
             v-model="volume"
             @input="changeVolume"
-            class="h-1 bg-gray-700 rounded-full cursor-pointer w-30"
+            class="h-1 bg-gray-700 rounded-full cursor-pointer w-4/5"
           />
         </div>
       </div>
