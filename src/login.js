@@ -89,5 +89,3 @@ export async function fetchProfileFromStorage() {
     return fetchProfile(token)
   }
 }
-
-

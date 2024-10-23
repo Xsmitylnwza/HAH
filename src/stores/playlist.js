@@ -3,14 +3,14 @@ import {
   getAccessToken,
   getUserPlaylists,
   getPlayList,
-  getTrack as fetchTrack, // Renamed to avoid conflict
+  getTrack as fetchTrack,
   getTrackByPlaylistsId,
   createPlaylist,
   editPlaylist,
   deletePlaylist,
   deleteSong,
   addItemToPlayList
-} from '../lib/fetchUtils'
+} from '@/lib/fetchUtils'
 import { ref } from 'vue'
 
 export const usePlaylistStore = defineStore('playlist', () => {
@@ -70,10 +70,18 @@ export const usePlaylistStore = defineStore('playlist', () => {
   const getTrackByPlaylistsIds = async (playlistsId, accessToken) => {
     try {
       const response = await getTrackByPlaylistsId(playlistsId, accessToken)
-      const playlist = response.items
+      const tracks = response.items
         .filter((item) => item.track)
-        .map((item) => item.track.album)
-      return playlist
+        .map((item) => ({
+          id: item.track.album.id,
+          trackId: item.track.id,
+          name: item.track.name,
+          albumImage: item.track.album.images[0]?.url,
+          artists: item.track.artists,
+          preview_url: item.track.preview_url,
+          uri: item.track.uri
+        }))
+      return tracks
     } catch (e) {
       console.error(e)
     }
@@ -129,9 +137,9 @@ export const usePlaylistStore = defineStore('playlist', () => {
     }
   }
 
-  const deleteSongFromPlayList = async (accessToken, trackId, uri) => {
+  const deleteSongFromPlayList = async (accessToken, playlistid, uri) => {
     try {
-      const response = await deleteSong(accessToken, trackId, uri)
+      const response = await deleteSong(accessToken, playlistid, uri)
       return response
     } catch (e) {
       console.error(e)

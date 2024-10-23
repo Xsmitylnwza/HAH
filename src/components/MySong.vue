@@ -1,107 +1,106 @@
 <script setup>
-import { onMounted, ref, computed } from "vue";
-import Header from "./Header.vue";
-import { fetchProfileFromStorage } from "../stores/login";
-import { useRouter } from "vue-router";
-import { useSongStore } from "@/stores/song";
-import EditMySong from "./EditMySong.vue";
-import noteImage from "../assets/note.svg";
-import DeleteModal from "./DeleteModal.vue";
+import { onMounted, ref, computed } from 'vue'
+import Header from '@/components/Header.vue'
+import { fetchProfileFromStorage } from '@/login'
+import { useRouter } from 'vue-router'
+import { useSongStore } from '@/stores/song'
+import EditMySong from '@/components/EditMySong.vue'
+import noteImage from '/images/note.svg'
+import defaultProfileImage from '/images/profile.jpeg'
+import DeleteModal from '@/components/DeleteModal.vue'
 
-const songStore = useSongStore();
-const router = useRouter();
-const isLoggedIn = ref(false);
-const username = ref("");
-const selectSongId = ref("");
-const currentAudio = ref(null);
-const currentSong = ref(null);
-const showEdit = ref(false);
-const showDelete = ref(false);
-const songToDelete = ref("");
-const searchInput = ref("");
+const songStore = useSongStore()
+const router = useRouter()
+const isLoggedIn = ref(false)
+const username = ref('')
+const selectSongId = ref('')
+const currentAudio = ref(null)
+const currentSong = ref(null)
+const showEdit = ref(false)
+const showDelete = ref(false)
+const songToDelete = ref('')
+const searchInput = ref('')
+const profileImage = ref('')
 
 onMounted(async () => {
-  const code = localStorage.getItem("code");
-  let localAccessToken = localStorage.getItem("access_token");
-  if (localAccessToken && code) isLoggedIn.value = true;
-  const profile = await fetchProfileFromStorage();
+  const code = localStorage.getItem('code')
+  let localAccessToken = localStorage.getItem('access_token')
+  if (localAccessToken && code) isLoggedIn.value = true
+  const profile = await fetchProfileFromStorage()
   if (profile) {
-    username.value = profile.display_name;
+    profileImage.value = profile.images[0].url
+    username.value = profile.display_name
   }
-  await songStore.setAllSongs();
-});
+  await songStore.setAllSongs()
+})
 
 const filteredSongs = computed(() => {
   if (!searchInput.value) {
-    return songStore.songs;
+    return songStore.songs
   }
   return songStore.songs.filter((song) =>
     song.musicName.toLowerCase().includes(searchInput.value.toLowerCase())
-  );
-});
+  )
+})
 
 const toggleAddSong = () => {
-  router.push({ name: "AddSong" });
-};
+  router.push({ name: 'AddSong' })
+}
 
 const closeEditModal = (value) => {
-  showEdit.value = value;
-};
+  showEdit.value = value
+}
 
 const login = () => {
-  router.push({ name: "login" });
-};
+  router.push({ name: 'login' })
+}
 
 const playSong = (song) => {
   if (currentAudio.value) {
-    currentAudio.value.pause();
+    currentAudio.value.pause()
   }
-  currentAudio.value = new Audio(song.musicLink);
+  currentAudio.value = new Audio(song.musicLink)
   currentAudio.value.play().catch((error) => {
-    console.error("Error playing audio:", error);
-  });
-  currentSong.value = song;
-};
+    console.error('Error playing audio:', error)
+  })
+  currentSong.value = song
+}
 
 const editSongData = (id) => {
-  showEdit.value = true;
-  selectSongId.value = id;
-};
+  showEdit.value = true
+  selectSongId.value = id
+}
 
 const toggleDelete = (id) => {
-  showDelete.value = true;
-  songToDelete.value = id;
-};
+  showDelete.value = true
+  songToDelete.value = id
+}
 
 const confirmDelete = async () => {
   try {
-    await songStore.deleteSong(songToDelete.value);
-    closeDeleteModal();
+    await songStore.deleteSong(songToDelete.value)
+    closeDeleteModal()
   } catch (error) {
-    console.error("Error deleting song:", error);
+    console.error('Error deleting song:', error)
   }
-};
+}
 
 const closeDeleteModal = () => {
-  showDelete.value = false;
-  songToDelete.value = null;
-};
+  showDelete.value = false
+  songToDelete.value = null
+}
 
 const imageError = (event) => {
-  event.target.src = noteImage;
+  event.target.src = noteImage
   event.target.classList.add(
-    "border-2",
-    "w-14",
-    "h-14",
-    "rounded-lg",
-    "filter",
-    "brightness-0",
-    "invert"
-  );
-};
-
-const backToHomePage = () => {
-  router.push({name : "music"})
+    'border-2',
+    'w-14',
+    'h-14',
+    'rounded-lg',
+    'filter',
+    'brightness-0',
+    'invert'
+  )
 }
 </script>
 
@@ -116,12 +115,12 @@ const backToHomePage = () => {
               type="text"
               v-model="searchInput"
               placeholder="Search for a music"
-              class="w-full pl-10 pr-4 py-4 rounded-3xl border border-gray-300 text-lg shadow-md focus:outline-none focus:ring focus:ring-blue-300"
+              class="w-full pl-10 py-2 rounded-3xl border border-gray-300 text-lg shadow-md focus:outline-none cursor-pointer"
             />
             <img
               alt="Search icon"
               class="absolute left-3 top-1/2 transform -translate-y-1/2 filter brightness-0 invert"
-              src="../assets/search.svg"
+              src="/images/search.svg"
               width="20"
               height="20"
             />
@@ -132,20 +131,27 @@ const backToHomePage = () => {
           <button
             v-if="!isLoggedIn"
             @click="login"
-            class="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold px-6 py-3 rounded-full hover:bg-blue-800 transition duration-300"
+            class="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-semibold px-8 py-2 rounded-lg shadow-lg hover:bg-purple-700 transition duration-300"
           >
             Login
           </button>
-          <div
-            v-else
-            class="flex items-center space-x-2 border-2 rounded-full pl-4"
-          >
-            <span class="text-white"> {{ username }}</span>
+
+          <div class="flex items-center space-x-2" v-if="isLoggedIn">
             <img
-              src="../assets/profile.jpeg"
-              alt="Profile Picture"
-              class="w-12 h-12 rounded-full"
+              @click="logout"
+              alt="logout"
+              src="/images/logout.svg"
+              class="w-6 h-6 cursor-pointer filter brightness-0 invert"
             />
+
+            <div class="flex items-center space-x-2 border-2 rounded-full pl-4">
+              <span class="text-white">{{ username }}</span>
+              <img
+                :src="profileImage || defaultProfileImage"
+                alt="Profile Picture"
+                class="w-12 h-12 rounded-full"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -156,8 +162,12 @@ const backToHomePage = () => {
     class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-lg overflow-y-auto"
   >
     <div class="p-4 flex justify-between items-center">
-      <h2 class="text-3xl font-bold cursor-pointer"
-      @click="backToHomePage">Rainlight Riot</h2>
+      <h2
+        class="text-3xl font-bold cursor-pointer"
+        @click="router.push({ name: 'music' })"
+      >
+        Rainlight Riot
+      </h2>
     </div>
 
     <div class="flex justify-start mb-6 ml-4">
@@ -171,8 +181,15 @@ const backToHomePage = () => {
   </div>
 
   <div class="ml-64 mt-16 p-6 bg-base-200 rounded-lg shadow-lg">
-    <h1 class="text-3xl font-bold text-primary mb-4">My Songs</h1>
-    <button @click="toggleAddSong" class="btn btn-primary">Add Song</button>
+    <h1 class="text-3xl font-bold text-purple-500 mb-4">My Songs</h1>
+    <div class="flex justify-end mb-4">
+      <button
+        @click="toggleAddSong"
+        class="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold w-[15%] p-4 rounded-full shadow-lg hover:scale-105 transition duration-300 ease-in-out"
+      >
+        Add Song
+      </button>
+    </div>
 
     <table
       class="table-auto w-full mt-6 border border-gray-300 rounded-lg overflow-hidden"
@@ -181,12 +198,11 @@ const backToHomePage = () => {
         <tr>
           <th class="px-4 py-2 text-center text-black">Cover</th>
           <th class="px-4 py-2 text-center text-black">Song Title</th>
-          <th class="px-4 py-2 text-center text-black">Artist</th>
+          <th class="px-4 py-2 text-center text-black">Artist Name</th>
           <th class="px-4 py-2 text-center text-black">Action</th>
         </tr>
       </thead>
       <tbody>
-        <!-- ใช้ filteredSongs ในการแสดงผลเพลง -->
         <tr
           v-for="song in filteredSongs"
           :key="song.id"
@@ -204,7 +220,7 @@ const backToHomePage = () => {
             </div>
             <div v-else class="border-2 border-gray-500 rounded-2xl">
               <img
-                src="../assets/note.svg"
+                src="/images/note.svg"
                 alt="Default Cover"
                 class="w-16 h-16 rounded-lg filter brightness-0 invert"
               />
@@ -213,19 +229,21 @@ const backToHomePage = () => {
           <td class="px-4 py-2 text-center text-white">{{ song.musicName }}</td>
           <td class="px-4 py-2 text-center text-white">{{ song.artist }}</td>
           <td class="px-4 py-2 text-center">
-            <button
-              class="btn bg-gradient-to-r from-purple-600 to-purple-800 text-white"
-              @click.stop="editSongData(song.id)"
-            >
-              Edit
-            </button>
+            <div class="flex justify-center space-x-2">
+              <button
+                class="w-20 px-2 py-2 bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded"
+                @click.stop="editSongData(song.id)"
+              >
+                Edit
+              </button>
 
-            <button
-              class="btn btn-error ml-2 text-white"
-              @click.stop="toggleDelete(song.id)"
-            >
-              Delete
-            </button>
+              <button
+                class="w-20 px-2 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                @click.stop="toggleDelete(song.id)"
+              >
+                Delete
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -242,7 +260,7 @@ const backToHomePage = () => {
     <teleport to="body">
       <DeleteModal
         v-if="showDelete"
-        :message="`Are you sure you want to delete `"
+        :message="`Are you sure you want to delete this song`"
         @confirm="confirmDelete"
         @cancel="closeDeleteModal"
       />

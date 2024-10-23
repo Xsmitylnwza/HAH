@@ -1,6 +1,6 @@
 <script setup>
 import { ref, defineProps, watch, onMounted } from 'vue'
-import Modal from './AddMusicPlaylist.vue'
+import AddMusicPlaylist from '@/components/AddMusicPlaylist.vue'
 
 const props = defineProps({
   previewUrl: String,
@@ -13,7 +13,6 @@ const isPlaying = ref(true)
 const currentTime = ref(0)
 const audioDuration = ref(0)
 
-// Set the default volume to 50% (0.5)
 const volume = ref(0.5)
 const volumeBeforeMute = ref(0.5)
 const isMuted = ref(false)
@@ -85,7 +84,6 @@ const resetPlayer = () => {
 }
 
 onMounted(() => {
-  // Set the default volume to 50%
   if (music.value) {
     music.value.volume = 0.5
   }
@@ -111,10 +109,9 @@ onMounted(() => {
 })
 
 const openModal = () => {
-  showModal.value = true 
+  showModal.value = true
 }
 </script>
-
 
 <template>
   <div
@@ -128,14 +125,18 @@ const openModal = () => {
     <div class="flex flex-col w-full pointer-events-auto">
       <div class="flex items-center text-white text-left -mb-20 mt-4">
         <img
-          v-if="currentTrack.images && currentTrack.images.length > 0"
-          :src="currentTrack.images[0].url"
+          v-if="currentTrack.albumImage && currentTrack.albumImage !== 'null'"
+          :src="currentTrack.albumImage"
           alt="Track Artwork"
           class="w-16 h-16 rounded-lg mr-4"
         />
         <img
-          v-else-if="album.images && album.images.length > 0"
-          :src="album.images[0].url"
+          v-else-if="
+            currentTrack &&
+            currentTrack.images &&
+            currentTrack.images.length > 0
+          "
+          :src="currentTrack.images[0].url"
           alt="Album Artwork"
           class="w-16 h-16 rounded-lg mr-6"
         />
@@ -143,7 +144,7 @@ const openModal = () => {
           <h2 class="text-lg font-semibold flex items-center z-20">
             {{ currentTrack.name }}
             <img
-              src="/src/assets/add.png"
+              src="/images/add.png"
               class="w-6 h-6 inline-block ml-2 cursor-pointer hover:opacity-80 transition duration-200 relative z-30"
               @click="openModal"
             />
@@ -159,7 +160,7 @@ const openModal = () => {
           class="rounded-full bg-white p-2 hover:bg-gray-200 transition duration-200"
         >
           <img
-            :src="isPlaying ? '/src/assets/pause.png' : '/src/assets/play.png'"
+            :src="isPlaying ? '/images/pause.png' : '/images/play.png'"
             class="w-6 h-6"
           />
         </button>
@@ -190,8 +191,8 @@ const openModal = () => {
           <img
             :src="
               volume === 0 || isMuted
-                ? '/src/assets/volumemute.png'
-                : '/src/assets/volume.png'
+                ? '/images/volumemute.png'
+                : '/images/volume.png'
             "
             class="w-6 h-6 cursor-pointer"
             @click="toggleMute"
@@ -209,7 +210,7 @@ const openModal = () => {
       </div>
     </div>
   </div>
-  <Modal
+  <AddMusicPlaylist
     v-if="showModal"
     @close="showModal = false"
     :previewUrl="previewUrl"

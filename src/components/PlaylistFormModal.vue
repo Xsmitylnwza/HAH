@@ -1,30 +1,25 @@
 <script setup>
-import { usePlaylistStore } from '../stores/playlist'
 import { ref, onMounted } from 'vue'
-import { fetchProfileFromStorage } from '../stores/login'
 import { useRouter, useRoute } from 'vue-router'
+import { usePlaylistStore } from '@/stores/playlist'
+import { fetchProfileFromStorage } from '@/login'
 
+const token = localStorage.getItem('access_token')
 const route = useRoute()
 const router = useRouter()
 const playlistStore = usePlaylistStore()
+const playlist = ref([])
 const user_id = ref('')
-
-const token = localStorage.getItem('access_token')
-
-// Playlist fields for creating/editing
 const newPlaylistName = ref('')
 const playlistDescription = ref('')
 const playlistsPublic = ref(false)
-const playlist = ref([])
 const mode = route.name === 'create' ? 'create' : 'edit'
-
 const newPlayList = ref({
   name: '',
   description: '',
   public: false
 })
 
-// Fetch user ID and set playlist values if editing
 onMounted(async () => {
   const profile = await fetchProfileFromStorage()
   if (profile) {
@@ -80,7 +75,9 @@ const closeModal = async () => {
   <div
     class="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50"
   >
-    <div class="bg-white text-black p-6 rounded-lg shadow-lg w-96">
+    <div
+      class="p-6 rounded-lg shadow-lg w-96 bg-gradient-to-r from-gray-800 to-gray-900 text-white"
+    >
       <h2 class="text-xl font-bold mb-4">
         {{ mode === 'create' ? 'Create Playlist' : 'Edit Playlist' }}
       </h2>
@@ -88,14 +85,14 @@ const closeModal = async () => {
       <input
         v-model="newPlaylistName"
         type="text"
-        class="w-full p-2 mb-4 border border-gray-300 rounded text-white"
+        class="w-full p-2 mb-4 border border-gray-300 rounded bg-gray-700 text-white"
         placeholder="Playlist Name"
       />
 
       <input
         v-model="playlistDescription"
         type="text"
-        class="w-full p-2 mb-4 border border-gray-300 rounded text-white"
+        class="w-full p-2 mb-4 border border-gray-300 rounded bg-gray-700 text-white"
         placeholder="Playlist Description"
       />
 
@@ -111,7 +108,7 @@ const closeModal = async () => {
       <div class="flex justify-end">
         <button
           @click="createOrEditPlaylist"
-          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          class="bg-violet-600 text-white px-4 py-2 rounded hover:bg-violet-700"
         >
           {{ mode === 'create' ? 'Create' : 'Save' }}
         </button>

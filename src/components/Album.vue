@@ -1,21 +1,21 @@
 <script setup>
 import { ref } from 'vue'
-import { usePlaylistStore } from '../stores/playlist'
-import TrackList from './TrackList.vue'
+import { usePlaylistStore } from '@/stores/playlist'
+import TrackList from '@/components/TrackList.vue'
 
 const props = defineProps({
   albums: Array
 })
 
 const playlistStore = usePlaylistStore()
-let accessToken = localStorage.getItem('access_token')
+let token = localStorage.getItem('access_token')
 
 const selectedAlbum = ref('')
 const tracks = ref([])
 
 const click = async (album) => {
   selectedAlbum.value = album
-  const trackData = await playlistStore.getTrackById(accessToken, album.id)
+  const trackData = await playlistStore.getTrackById(token, album.id)
   tracks.value = trackData
 }
 const goBack = () => {
@@ -50,9 +50,7 @@ const goBack = () => {
     </button>
   </div>
 
-  <!-- Render the TrackList component and the Back button only if an album is selected -->
   <div v-if="selectedAlbum">
-    <!-- Back button aligned to the right -->
     <div class="flex justify-end mb-4">
       <button
         @click="goBack"
@@ -62,7 +60,6 @@ const goBack = () => {
       </button>
     </div>
 
-    <!-- TrackList component -->
     <TrackList :tracks="tracks" :album="selectedAlbum" />
   </div>
 </template>

@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
-import { useUserStore } from '../stores/user'
-import { redirectToAuthCodeFlow } from '../stores/login'
+import { useUserStore } from '@/stores/user'
+import { redirectToAuthCodeFlow } from '@/login'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -42,7 +42,7 @@ const close = () => {
           <img
             alt="Close"
             class="logo cursor-pointer"
-            src="../assets/close.svg"
+            src="/images/close.svg"
             width="20"
             height="20"
           />
@@ -72,7 +72,7 @@ const close = () => {
       <div class="flex flex-col items-center mt-8">
         <button
           @click="login"
-          class="bg-gradient-to-r from-blue-500 to-blue-700 text-white text-lg px-4 py-2 rounded hover:bg-blue-800 mb-4 w-full"
+          class="bg-gradient-to-r from-purple-600 to-purple-800 text-white text-lg px-4 py-2 rounded mb-4 w-full"
         >
           Login
         </button>

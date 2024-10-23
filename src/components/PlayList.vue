@@ -1,12 +1,12 @@
 <script setup>
-import { usePlaylistStore } from '../stores/playlist'
 import { ref, watch, onMounted } from 'vue'
-import MusicPlayer from './MusicPlayer.vue'
 import { useRoute } from 'vue-router'
-import DeleteModal from './DeleteModal.vue'
+import { usePlaylistStore } from '@/stores/playlist'
+import MusicPlayer from '@/components/MusicPlayer.vue'
+import DeleteModal from '@/components/DeleteModal.vue'
 
 const playlistStore = usePlaylistStore()
-let accessToken = localStorage.getItem('access_token')
+let token = localStorage.getItem('access_token')
 
 const route = useRoute()
 const previewUrl = ref('')
@@ -25,7 +25,7 @@ const trackName = ref('')
 onMounted(async () => {
   tracks.value = await playlistStore.getTrackByPlaylistsIds(
     route.params.playlistid,
-    accessToken
+    token
   )
 })
 watch(
@@ -33,19 +33,19 @@ watch(
   async (newPlaylistId) => {
     tracks.value = await playlistStore.getTrackByPlaylistsIds(
       newPlaylistId,
-      accessToken
+      token
     )
   }
 )
 
 const click = async (track) => {
   try {
-    const tracks = await playlistStore.getTrackById(accessToken, track.id)
+    const tracks = await playlistStore.getTrackById(token, track.id)
     if (tracks && tracks.length > 0) {
-      const firstTrack = tracks[0]
-      if (firstTrack.preview_url) {
-        previewUrl.value = firstTrack.preview_url
-        trackId.value = firstTrack.id
+      const currentTrackDetails = tracks.find((t) => t.id === track.trackId)
+      if (currentTrackDetails && currentTrackDetails.preview_url) {
+        previewUrl.value = currentTrackDetails.preview_url
+        trackId.value = currentTrackDetails.id
         currentTrack.value = track
       } else {
         resetPlayer()
@@ -62,26 +62,24 @@ const click = async (track) => {
 const confirmDelete = async () => {
   if (trackToDelete.value) {
     const tracksResponse = await playlistStore.getTrackById(
-      accessToken,
+      token,
       trackToDelete.value.id
     )
-    if (tracksResponse.length > 1) {
-      uri.value = tracksResponse.map((t) => t.uri)
-    } else if (tracksResponse && tracksResponse.length > 0) {
-      const firstTrack = tracksResponse[0]
-      uri.value = firstTrack.uri
-    } else {
-      resetPlayer()
-      return
-    }
+    const currentTrackDetails = tracksResponse.find(
+      (t) => t.id === trackToDelete.value.trackId
+    )
+    uri.value = currentTrackDetails.uri
 
     try {
       await playlistStore.deleteSongFromPlayList(
-        accessToken,
+        token,
         route.params.playlistid,
         uri.value
       )
-      tracks.value = tracks.value.filter((t) => t.id !== trackToDelete.value.id)
+
+      tracks.value = tracks.value.filter(
+        (t) => t.trackId !== trackToDelete.value.trackId
+      )
     } catch (error) {
       console.error(error)
     }
@@ -125,36 +123,34 @@ const toggleDropdown = (trackId) => {
       @click="click(track)"
     >
       <img
-        :src="track.images[0].url"
+        :src="track.albumImage"
         alt="Album Cover"
         class="w-full h-64 object-cover rounded-t-lg"
       />
-
-      <!-- Song Info -->
       <div class="p-4">
         <h3
           class="text-white text-lg font-semibold hover:text-violet-400 transition-colors duration-200"
         >
           {{ track.name }}
         </h3>
-        <p class="text-gray-400">{{ track.artists[0].name }}</p>
+        <p class="text-gray-400">
+          {{ track.artists.map((artist) => artist.name).join(', ') }}
+        </p>
       </div>
-
-      <!-- Dropdown Button -->
       <button
         class="absolute top-4 right-4 bg-gray-800 hover:bg-gray-700 p-2 rounded-full"
-        @click.stop="toggleDropdown(track.id)"
+        @click.stop="toggleDropdown(track.trackId)"
       >
         <img
           alt="Options"
           class="w-5 h-5 filter brightness-0 invert"
-          src="../assets/options.svg"
+          src="/images/options.svg"
         />
       </button>
 
       <!-- Dropdown Menu -->
       <div
-        v-if="showDropdown === track.id"
+        v-if="showDropdown === track.trackId"
         class="absolute right-4 top-12 mt-2 w-32 bg-white text-black shadow-lg rounded-lg z-20"
       >
         <button
@@ -168,7 +164,7 @@ const toggleDropdown = (trackId) => {
   </div>
 
   <div v-else>
-    <p class="text-center text-gray-500">No playlists found.</p>
+    <p class="text-center text-gray-500">No songs available</p>
   </div>
 
   <!-- Music Player -->
@@ -184,7 +180,7 @@ const toggleDropdown = (trackId) => {
   <teleport to="body">
     <DeleteModal
       v-if="showDelete"
-      :message="`Are you sure you want to delete ${trackName}?`"
+      :message="`Are you sure you want to delete ${trackName} from your playlist?`"
       @confirm="confirmDelete"
       @cancel="showDelete = false"
     />

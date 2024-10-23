@@ -183,7 +183,6 @@ const getTrackByPlaylistsId = async (playlistsId, access_token) => {
   return tracksData
 }
 
-
 const getTrack = async (access_token, id) => {
   const albumResponse = await fetch(
     `https://api.spotify.com/v1/albums/${id}/tracks`,
@@ -233,7 +232,6 @@ const addItemToPlayList = async (access_token, playlist_id, uris) => {
     console.error(error.message)
     return
   }
-
   const body = {
     uris: urisArray
   }
@@ -297,7 +295,6 @@ const deleteSong = async (access_token, playlistId, uris) => {
     return
   }
 
-  // เรียก API เพื่อ delete songs
   await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
     method: 'DELETE',
     headers: {
@@ -343,5 +340,4 @@ export {
   getArtisttopTracks,
   deleteSong,
   addItemToPlayList
-
 }

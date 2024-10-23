@@ -1,14 +1,14 @@
 <script setup>
-import { usePlaylistStore } from '../stores/playlist'
 import { ref } from 'vue'
-import MusicPlayer from './MusicPlayer.vue'
+import { usePlaylistStore } from '@/stores/playlist'
+import MusicPlayer from '@/components/MusicPlayer.vue'
 
 const props = defineProps({
   tracks: Array
 })
 
 const playlistStore = usePlaylistStore()
-let accessToken = localStorage.getItem('access_token')
+let token = localStorage.getItem('access_token')
 const previewUrl = ref('')
 const currentTrack = ref(null)
 const currentTime = ref(0)
@@ -18,7 +18,7 @@ const trackId = ref('')
 
 const click = async (track) => {
   try {
-    const tracks = await playlistStore.getTrackById(accessToken, track.id)
+    const tracks = await playlistStore.getTrackById(token, track.id)
     if (tracks && tracks.length > 0) {
       const firstTrack = tracks[0]
       if (firstTrack.preview_url) {
@@ -62,8 +62,6 @@ const resetPlayer = () => {
         alt="Album Cover"
         class="w-full h-64 object-cover rounded-t-lg"
       />
-
-      <!-- Song Info -->
       <div class="p-4">
         <h3
           class="text-white text-lg font-semibold hover:text-violet-400 transition-colors duration-200"
@@ -74,8 +72,6 @@ const resetPlayer = () => {
       </div>
     </div>
   </div>
-
-  <!-- Music Player -->
   <MusicPlayer
     v-if="currentTrack"
     :previewUrl="previewUrl"

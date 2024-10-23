@@ -1,14 +1,12 @@
-
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginModal from '../components/LoginModal.vue'
-import MusicApp from '../components/MusicApp.vue'
-import PlaylistFormModal from '../components/PlaylistFormModal.vue'
-import createMySong from '../components/createMySong.vue'
-import MySong from '../components/MySong.vue'
+import LoginModal from '@/components/LoginModal.vue'
+import MusicApp from '@/components/MusicApp.vue'
+import PlaylistFormModal from '@/components/PlaylistFormModal.vue'
+import createMySong from '@/components/createMySong.vue'
+import MySong from '@/components/MySong.vue'
 import EditMySong from '@/components/EditMySong.vue'
 import PlayList from '@/components/PlayList.vue'
 import SearchPage from '@/components/SearchPage.vue'
-
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

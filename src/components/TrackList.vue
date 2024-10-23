@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import MusicPlayer from './MusicPlayer.vue'
+import MusicPlayer from '@/components/MusicPlayer.vue'
 
 const props = defineProps({
   tracks: Array,
@@ -11,8 +11,8 @@ let previewUrl = ref('')
 let currentTrack = ref(null)
 
 const click = (track) => {
-  previewUrl.value = track.preview_url // กำหนด URL ของเพลงที่ถูกคลิก
-  currentTrack.value = track // กำหนด track ที่ถูกเลือก
+  previewUrl.value = track.preview_url
+  currentTrack.value = track
 }
 </script>
 
@@ -60,7 +60,7 @@ const click = (track) => {
     <MusicPlayer
       v-if="currentTrack"
       :preview-url="previewUrl"
-      :current-track="currentTrack"
+      :currentTrack="currentTrack"
       :album="album"
     />
   </div>

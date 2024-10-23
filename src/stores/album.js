@@ -3,7 +3,7 @@ import {
   getArtist,
   getAlbumfromArtist,
   getArtisttopTracks
-} from '../lib/fetchUtils'
+} from '@/lib/fetchUtils'
 import { ref } from 'vue'
 
 export const useAlbumStore = defineStore('album', () => {

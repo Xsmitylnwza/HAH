@@ -1,14 +1,14 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import Header from './Header.vue'
-import Album from './Album.vue'
-import { usePlaylistStore } from '../stores/playlist'
-import { useAlbumStore } from '../stores/album'
-import { fetchProfileFromStorage, getAccessToken } from '../stores/login'
-import DeleteModal from './DeleteModal.vue'
+import Header from '@/components/Header.vue'
+import Album from '@/components/Album.vue'
+import { usePlaylistStore } from '@/stores/playlist'
+import { useAlbumStore } from '@/stores/album'
+import { fetchProfileFromStorage, getAccessToken } from '@/login'
+import DeleteModal from '@/components/DeleteModal.vue'
 import { useRouter } from 'vue-router'
-import defaultProfileImage from '../assets/profile.jpeg'
-import PlayListDefault from './PlayListDefault.vue'
+import defaultProfileImage from '/images/profile.jpeg'
+import PlayListDefault from '@/components/PlayListDefault.vue'
 
 const router = useRouter()
 const albumStore = useAlbumStore()
@@ -139,7 +139,7 @@ const logout = () => {
             <img
               alt="Search icon"
               class="absolute left-3 top-1/2 transform -translate-y-1/2 filter brightness-0 invert"
-              src="../assets/search.svg"
+              src="/images/search.svg"
               width="20"
               height="20"
             />
@@ -159,7 +159,7 @@ const logout = () => {
             <img
               @click="logout"
               alt="logout"
-              src="../assets/logout.svg"
+              src="/images/logout.svg"
               class="w-6 h-6 cursor-pointer filter brightness-0 invert"
             />
 
@@ -181,17 +181,22 @@ const logout = () => {
     class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-lg overflow-y-auto"
   >
     <div class="p-4 flex justify-between items-center">
-      <h2 class="text-3xl font-bold">Rainlight Riot</h2>
+      <h2
+        class="text-3xl font-bold cursor-pointer"
+        @click="router.push({ name: 'music' })"
+      >
+        Rainlight Riot
+      </h2>
       <button
         @click="toggleCreate"
-        class="flex items-center justify-center transition-transform duration-300 hover:scale-110 rounded-full bg-slate-500 hover:bg-slate-600"
+        class="flex items-center justify-center transition-transform duration-300 hover:scale-110 rounded-full bg-slate-500 hover:bg-slate-600 mt-1 ml-4"
       >
         <img
-          alt="Vue logo"
+          alt="Add Playlist"
           class="logo cursor-pointer"
-          src="../assets/plus.svg"
-          width="35"
-          height="35"
+          src="/images/plus.svg"
+          width="30"
+          height="30"
         />
       </button>
     </div>
@@ -226,7 +231,7 @@ const logout = () => {
           </div>
           <div v-else>
             <img
-              src="../assets/note.svg"
+              src="/images/note.svg"
               alt="Image"
               width="70"
               height="70"
@@ -243,7 +248,7 @@ const logout = () => {
           <img
             alt="Vue logo"
             class="logo cursor-pointer filter brightness-4 invert"
-            src="../assets/options.svg"
+            src="/images/options.svg"
             width="23"
             height="23"
           />
